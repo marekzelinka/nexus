@@ -1,11 +1,11 @@
-import { cx } from '~/lib/utils';
+import { cx } from "~/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 200 200"
       fill="currentColor"
-      className={cx('text-primary', className)}
+      className={cx("text-primary", className)}
       aria-hidden
     >
       <path

@@ -1,14 +1,14 @@
-import type { Password, User } from '@prisma/client';
-import { redirect, redirectDocument } from '@remix-run/node';
-import bcrypt from 'bcryptjs';
-import { db } from './db.server';
-import { authSessionStorage, getAuthSession } from './session.server';
+import type { Password, User } from "@prisma/client";
+import { redirect, redirectDocument } from "@remix-run/node";
+import bcrypt from "bcryptjs";
+import { db } from "./db.server";
+import { authSessionStorage, getAuthSession } from "./session.server";
 
-const USER_SESSION_KEY = 'userId';
+const USER_SESSION_KEY = "userId";
 
 export async function getUserId(
   request: Request,
-): Promise<User['id'] | undefined> {
+): Promise<User["id"] | undefined> {
   const session = await getAuthSession(request);
   const userId = session.get(USER_SESSION_KEY);
 
@@ -38,7 +38,7 @@ export async function requireUserId(
   const userId = await getUserId(request);
 
   if (!userId) {
-    const loginParams = new URLSearchParams([['redirectTo', redirectTo]]);
+    const loginParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${loginParams}`);
   }
 
@@ -72,7 +72,7 @@ export async function createUserSession({
 
   return redirect(redirectTo, {
     headers: {
-      'Set-Cookie': await authSessionStorage.commitSession(session, {
+      "Set-Cookie": await authSessionStorage.commitSession(session, {
         maxAge: remember
           ? 60 * 60 * 24 * 7 // 7 days
           : undefined,
@@ -87,7 +87,7 @@ export async function createUser({
   last,
   email,
   password,
-}: Pick<User, 'username' | 'first' | 'last' | 'email'> & { password: string }) {
+}: Pick<User, "username" | "first" | "last" | "email"> & { password: string }) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return await db.user.create({
@@ -102,8 +102,8 @@ export async function createUser({
 }
 
 export async function verifyLogin(
-  email: User['email'],
-  password: Password['hash'],
+  email: User["email"],
+  password: Password["hash"],
 ) {
   const userWithPassword = await db.user.findUnique({
     include: { password: true },
@@ -129,9 +129,9 @@ export async function verifyLogin(
 export async function logout(request: Request) {
   const session = await getAuthSession(request);
 
-  return redirectDocument('/', {
+  return redirectDocument("/", {
     headers: {
-      'Set-Cookie': await authSessionStorage.destroySession(session),
+      "Set-Cookie": await authSessionStorage.destroySession(session),
     },
   });
 }

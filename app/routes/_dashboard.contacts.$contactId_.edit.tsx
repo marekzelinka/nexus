@@ -3,16 +3,16 @@ import {
   getInputProps,
   getTextareaProps,
   useForm,
-} from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { invariant, invariantResponse } from '@epic-web/invariant';
-import { ChevronLeftIcon } from '@radix-ui/react-icons';
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { invariant, invariantResponse } from "@epic-web/invariant";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import {
-  unstable_data as data,
+  data,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
   type MetaFunction,
-} from '@remix-run/node';
+} from "@remix-run/node";
 import {
   Form,
   Link,
@@ -20,24 +20,24 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
-} from '@remix-run/react';
-import { format } from 'date-fns';
-import { z } from 'zod';
-import { GeneralErrorBoundary } from '~/components/error-boundary';
-import { ErrorList } from '~/components/forms';
+} from "@remix-run/react";
+import { format } from "date-fns";
+import { z } from "zod";
+import { GeneralErrorBoundary } from "~/components/error-boundary";
+import { ErrorList } from "~/components/forms";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-} from '~/components/ui/breadcrumb';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
-import { Separator } from '~/components/ui/separator';
-import { Textarea } from '~/components/ui/textarea';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
+} from "~/components/ui/breadcrumb";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Separator } from "~/components/ui/separator";
+import { Textarea } from "~/components/ui/textarea";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
 
 const EditContactSchema = z.object({
   first: z
@@ -53,20 +53,20 @@ const EditContactSchema = z.object({
   avatar: z
     .string()
     .trim()
-    .url('Avatar URL is invalid')
+    .url("Avatar URL is invalid")
     .optional()
     .transform((arg) => arg || null),
   bio: z
     .string()
     .trim()
-    .max(255, 'Bio ts too long')
+    .max(255, "Bio ts too long")
     .optional()
     .transform((arg) => arg || null),
   email: z
     .string()
     .trim()
-    .email('Email is invalid')
-    .min(3, 'Email is too short')
+    .email("Email is invalid")
+    .min(3, "Email is too short")
     // Users can type the email in any case, but we store it in lowercase
     .transform((arg) => arg.toLowerCase())
     .optional()
@@ -79,19 +79,19 @@ const EditContactSchema = z.object({
   linkedin: z
     .string()
     .trim()
-    .url('LinkedIn URL is invalid')
+    .url("LinkedIn URL is invalid")
     .optional()
     .transform((arg) => arg || null),
   social: z
     .string()
     .trim()
-    .url('Social URL is invalid')
+    .url("Social URL is invalid")
     .optional()
     .transform((arg) => arg || null),
   website: z
     .string()
     .trim()
-    .url('Website URL is invalid')
+    .url("Website URL is invalid")
     .optional()
     .transform((arg) => arg || null),
   location: z
@@ -105,19 +105,19 @@ const EditContactSchema = z.object({
     .optional()
     .transform((arg) => arg || null),
   birthday: z.coerce
-    .date({ invalid_type_error: 'Birthday is invalid' })
+    .date({ invalid_type_error: "Birthday is invalid" })
     .optional()
     .transform((arg) => arg?.toISOString() || null),
 });
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: data ? 'Edit contact' : 'No contact found' }];
+  return [{ title: data ? "Edit contact" : "No contact found" }];
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: {
       id: true,
@@ -142,13 +142,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     { status: 404 },
   );
 
-  return { contact };
+  return data({ contact });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
@@ -162,10 +162,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: EditContactSchema });
 
-  if (submission.status !== 'success') {
+  if (submission.status !== "success") {
     return data(
       { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 },
+      { status: submission.status === "error" ? 400 : 200 },
     );
   }
 
@@ -188,7 +188,8 @@ export function ErrorBoundary() {
 }
 
 export default function Component() {
-  const { contact } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { contact } = loaderData.data;
 
   const actionData = useActionData<typeof action>();
 
@@ -196,13 +197,13 @@ export default function Component() {
     defaultValue: {
       ...contact,
       birthday: contact.birthday
-        ? format(contact.birthday, 'yyyy-MM-dd')
+        ? format(contact.birthday, "yyyy-MM-dd")
         : null,
     },
     constraint: getZodConstraint(EditContactSchema),
-    lastResult: actionData?.result,
-    shouldValidate: 'onBlur',
-    shouldRevalidate: 'onInput',
+    lastResult: actionData?.data.result,
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
     onValidate: ({ formData }) => {
       return parseWithZod(formData, { schema: EditContactSchema });
     },
@@ -223,13 +224,13 @@ export default function Component() {
                 >
                   <ChevronLeftIcon aria-hidden />
                   <span className="text-foreground">
-                    Editing{' '}
+                    Editing{" "}
                     {contact.first || contact.last ? (
                       <>
                         {contact.first} {contact.last}
                       </>
                     ) : (
-                      'No Name'
+                      "No Name"
                     )}
                   </span>
                 </Link>
@@ -250,7 +251,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="bg-background"
-                  {...getInputProps(fields.avatar, { type: 'url' })}
+                  {...getInputProps(fields.avatar, { type: "url" })}
                 />
                 <ErrorList
                   id={fields.avatar.errorId}
@@ -266,7 +267,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.first, { type: 'text' })}
+                  {...getInputProps(fields.first, { type: "text" })}
                 />
                 <ErrorList
                   id={fields.first.errorId}
@@ -282,7 +283,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.last, { type: 'text' })}
+                  {...getInputProps(fields.last, { type: "text" })}
                 />
                 <ErrorList
                   id={fields.last.errorId}
@@ -318,7 +319,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.email, { type: 'email' })}
+                  {...getInputProps(fields.email, { type: "email" })}
                 />
                 <ErrorList
                   id={fields.email.errorId}
@@ -334,7 +335,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.phone, { type: 'tel' })}
+                  {...getInputProps(fields.phone, { type: "tel" })}
                 />
                 <ErrorList
                   id={fields.phone.errorId}
@@ -350,7 +351,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.linkedin, { type: 'url' })}
+                  {...getInputProps(fields.linkedin, { type: "url" })}
                 />
                 <ErrorList
                   id={fields.linkedin.errorId}
@@ -366,7 +367,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.social, { type: 'url' })}
+                  {...getInputProps(fields.social, { type: "url" })}
                 />
                 <ErrorList
                   id={fields.social.errorId}
@@ -382,7 +383,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.website, { type: 'url' })}
+                  {...getInputProps(fields.website, { type: "url" })}
                 />
                 <ErrorList
                   id={fields.website.errorId}
@@ -401,7 +402,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-sm bg-background"
-                  {...getInputProps(fields.location, { type: 'text' })}
+                  {...getInputProps(fields.location, { type: "text" })}
                 />
                 <ErrorList
                   id={fields.location.errorId}
@@ -417,7 +418,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-xs bg-background"
-                  {...getInputProps(fields.company, { type: 'text' })}
+                  {...getInputProps(fields.company, { type: "text" })}
                 />
                 <ErrorList
                   id={fields.company.errorId}
@@ -433,7 +434,7 @@ export default function Component() {
               <div className="col-span-2">
                 <Input
                   className="max-w-fit bg-background"
-                  {...getInputProps(fields.birthday, { type: 'date' })}
+                  {...getInputProps(fields.birthday, { type: "date" })}
                 />
                 <ErrorList
                   id={fields.birthday.errorId}

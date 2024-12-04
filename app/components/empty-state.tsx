@@ -1,7 +1,7 @@
-import { type ReactNode } from 'react';
+import { type ReactNode } from "react";
 
 export function EmptyState({
-  title = 'No data',
+  title = "No data",
   description,
   children,
 }: {

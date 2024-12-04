@@ -1,52 +1,52 @@
-import { parseWithZod } from '@conform-to/zod';
-import { invariant, invariantResponse } from '@epic-web/invariant';
-import { DotsHorizontalIcon, UpdateIcon } from '@radix-ui/react-icons';
+import { parseWithZod } from "@conform-to/zod";
+import { invariant, invariantResponse } from "@epic-web/invariant";
+import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
 import {
-  unstable_data as data,
+  data,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
   type SerializeFrom,
-} from '@remix-run/node';
+} from "@remix-run/node";
 import {
   Link,
   useActionData,
   useFetchers,
   useLoaderData,
-} from '@remix-run/react';
-import { compareAsc, format, isToday, isYesterday } from 'date-fns';
-import { useState } from 'react';
-import { useSpinDelay } from 'spin-delay';
-import { EmptyState } from '~/components/empty-state';
-import { NoteForm, NoteFormSchema } from '~/components/note-form';
-import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+} from "@remix-run/react";
+import { compareAsc, format, isToday, isYesterday } from "date-fns";
+import { useState } from "react";
+import { useSpinDelay } from "spin-delay";
+import { EmptyState } from "~/components/empty-state";
+import { NoteForm, NoteFormSchema } from "~/components/note-form";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
-import { useClipboard } from '~/lib/utils';
+} from "~/components/ui/dropdown-menu";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { useClipboard } from "~/lib/utils";
 
 type LoaderData = SerializeFrom<typeof loader>;
-type Note = LoaderData['notes'][number];
+type Note = LoaderData["data"]["notes"][number];
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const notes = await db.note.findMany({
     select: { id: true, text: true, date: true, createdAt: true },
     where: { contactId: params.contactId },
   });
 
-  return { notes };
+  return data({ notes });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
@@ -60,10 +60,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: NoteFormSchema });
 
-  if (submission.status !== 'success') {
+  if (submission.status !== "success") {
     return data(
       { result: submission.reply() },
-      { status: submission.status === 'error' ? 400 : 200 },
+      { status: submission.status === "error" ? 400 : 200 },
     );
   }
 
@@ -73,7 +73,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     data: { text, date, contact: { connect: { id: params.contactId } } },
   });
 
-  return { result: submission.reply({ resetForm: true }) };
+  return data({ result: submission.reply({ resetForm: true }) });
 }
 
 export default function Component() {
@@ -86,7 +86,7 @@ export default function Component() {
         <NoteSavingIndicator />
       </CardHeader>
       <CardContent className="grid gap-8">
-        <NoteForm lastResult={actionData?.result} />
+        <NoteForm lastResult={actionData?.data.result} />
         <NoteList />
       </CardContent>
     </Card>
@@ -107,7 +107,8 @@ function NoteSavingIndicator() {
 }
 
 function NoteList() {
-  const { notes } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { notes } = loaderData.data;
 
   const optimisticNotes = useOptimisticNotes();
   const notesById = new Map(notes.map((note) => [note.id, note]));
@@ -151,15 +152,15 @@ function useOptimisticNotes() {
       const submission = parseWithZod(fetcher.formData, {
         schema: NoteFormSchema,
       });
-      if (submission.status !== 'success') {
+      if (submission.status !== "success") {
         return null;
       }
 
       return {
         ...submission.value,
         id: fetcher.key,
-        date: new Date(submission.value.date),
-        createdAt: new Date(),
+        date: new Date(submission.value.date).toISOString(),
+        createdAt: new Date().toISOString(),
       };
     })
     .filter((note) => note !== null);
@@ -174,10 +175,10 @@ function NoteItem({ note }: { note: Note }) {
       <div className="flex flex-none items-center gap-2">
         <p className="text-sm text-muted-foreground">
           {isToday(note.date)
-            ? 'Today'
+            ? "Today"
             : isYesterday(note.date)
-              ? 'Yesterday'
-              : format(note.date, 'PP')}
+              ? "Yesterday"
+              : format(note.date, "PP")}
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -204,12 +205,12 @@ function NoteItem({ note }: { note: Note }) {
 
 const MAX_LENGTH = 255;
 
-function NoteText({ note }: { note: Pick<Note, 'text'> }) {
+function NoteText({ note }: { note: Pick<Note, "text"> }) {
   const shouldClamp = note.text.length > MAX_LENGTH;
   const [isClamped, setIsClamped] = useState(shouldClamp);
 
   const text = isClamped
-    ? note.text.substring(0, MAX_LENGTH).trimEnd() + '…'
+    ? note.text.substring(0, MAX_LENGTH).trimEnd() + "…"
     : note.text;
 
   return (
@@ -221,14 +222,14 @@ function NoteText({ note }: { note: Pick<Note, 'text'> }) {
           size="sm"
           onClick={() => setIsClamped((isClamped) => !isClamped)}
         >
-          {isClamped ? 'Show more' : 'Show less'}
+          {isClamped ? "Show more" : "Show less"}
         </Button>
       ) : null}
     </div>
   );
 }
 
-function CopyNoteAction({ note }: { note: Pick<Note, 'text'> }) {
+function CopyNoteAction({ note }: { note: Pick<Note, "text"> }) {
   const { copy } = useClipboard(note.text);
 
   return <DropdownMenuItem onClick={copy}>Copy</DropdownMenuItem>;

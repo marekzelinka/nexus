@@ -1,16 +1,17 @@
-import type { Contact } from '@prisma/client';
+import type { Contact } from "@prisma/client";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
   StarFilledIcon,
   UpdateIcon,
-} from '@radix-ui/react-icons';
+} from "@radix-ui/react-icons";
 import {
+  data,
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
   type MetaFunction,
-} from '@remix-run/node';
+} from "@remix-run/node";
 import {
   Form,
   NavLink,
@@ -20,27 +21,27 @@ import {
   useNavigation,
   useSearchParams,
   useSubmit,
-} from '@remix-run/react';
-import { matchSorter } from 'match-sorter';
-import type { PropsWithChildren } from 'react';
-import { useEffect, useRef } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import sortBy from 'sort-by';
-import { useSpinDelay } from 'spin-delay';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { ScrollArea } from '~/components/ui/scroll-area';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
-import { cx } from '~/lib/utils';
+} from "@remix-run/react";
+import { matchSorter } from "match-sorter";
+import type { PropsWithChildren } from "react";
+import { useEffect, useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import sortBy from "sort-by";
+import { useSpinDelay } from "spin-delay";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { cx } from "~/lib/utils";
 
-export const meta: MetaFunction = () => [{ title: 'Contacts' }];
+export const meta: MetaFunction = () => [{ title: "Contacts" }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
 
   const url = new URL(request.url);
-  const q = url.searchParams.get('q');
+  const q = url.searchParams.get("q");
 
   let contacts = await db.contact.findMany({
     select: { id: true, first: true, last: true, avatar: true, favorite: true },
@@ -48,12 +49,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (q) {
-    contacts = matchSorter(contacts, q, { keys: ['first', 'last'] });
+    contacts = matchSorter(contacts, q, { keys: ["first", "last"] });
   }
 
-  contacts = contacts.sort(sortBy('last', 'createdAt'));
+  contacts = contacts.sort(sortBy("last", "createdAt"));
 
-  return { contacts };
+  return data({ contacts });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -68,7 +69,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Component() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { contacts } = loaderData.data;
 
   return (
     <>
@@ -99,21 +101,21 @@ export default function Component() {
                   prefetch="intent"
                   className={({ isActive, isPending }) =>
                     cx(
-                      'group flex items-center gap-2 rounded-md p-2 text-sm transition-colors',
+                      "group flex items-center gap-2 rounded-md p-2 text-sm transition-colors",
                       isActive
-                        ? 'bg-primary'
+                        ? "bg-primary"
                         : isPending
-                          ? 'bg-muted'
-                          : 'hover:bg-muted',
+                          ? "bg-muted"
+                          : "hover:bg-muted",
                       isActive
                         ? contact.first || contact.last
-                          ? 'text-primary-foreground'
-                          : 'text-primary-foreground/70'
+                          ? "text-primary-foreground"
+                          : "text-primary-foreground/70"
                         : isPending
-                          ? 'text-primary'
+                          ? "text-primary"
                           : contact.first || contact.last
-                            ? ''
-                            : 'text-muted-foreground',
+                            ? ""
+                            : "text-muted-foreground",
                     )
                   }
                 >
@@ -125,18 +127,18 @@ export default function Component() {
                             {contact.first} {contact.last}
                           </>
                         ) : (
-                          'No Name'
+                          "No Name"
                         )}
                       </span>
                       <Favorite contact={contact}>
                         <StarFilledIcon
                           className={cx(
-                            'flex-none',
+                            "flex-none",
                             isActive
-                              ? 'text-primary-foreground'
+                              ? "text-primary-foreground"
                               : isPending
-                                ? 'text-foreground'
-                                : 'text-muted-foreground group-hover:text-foreground',
+                                ? "text-foreground"
+                                : "text-muted-foreground group-hover:text-foreground",
                           )}
                           aria-hidden
                         />
@@ -159,14 +161,14 @@ export default function Component() {
 
 function ContactLoadingOverlay({ children }: PropsWithChildren) {
   const navigation = useNavigation();
-  const isLoading = navigation.state === 'loading';
-  const isSearching = new URLSearchParams(navigation.location?.search).has('q');
+  const isLoading = navigation.state === "loading";
+  const isSearching = new URLSearchParams(navigation.location?.search).has("q");
   const shouldShowOverlay = useSpinDelay(isLoading && !isSearching);
 
   return (
     <div
       className={
-        shouldShowOverlay ? 'opacity-50 transition-opacity' : undefined
+        shouldShowOverlay ? "opacity-50 transition-opacity" : undefined
       }
     >
       {children}
@@ -176,13 +178,13 @@ function ContactLoadingOverlay({ children }: PropsWithChildren) {
 
 function SearchBar() {
   const [searchParams] = useSearchParams();
-  const q = searchParams.get('q');
+  const q = searchParams.get("q");
 
   // Used to submit the form for every keystroke
   const submit = useSubmit();
 
   const navigation = useNavigation();
-  const isSearching = new URLSearchParams(navigation.location?.search).has('q');
+  const isSearching = new URLSearchParams(navigation.location?.search).has("q");
   const shouldShowSpinner = useSpinDelay(isSearching);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -191,12 +193,12 @@ function SearchBar() {
   useEffect(() => {
     const searchField = inputRef.current;
     if (searchField) {
-      searchField.value = q ?? '';
+      searchField.value = q ?? "";
     }
   }, [q]);
 
   // Focus input on key press
-  const shortcut = '/';
+  const shortcut = "/";
   useHotkeys(
     shortcut,
     () => {
@@ -263,11 +265,11 @@ function Favorite({
   contact,
   children,
 }: PropsWithChildren<{
-  contact: Pick<Contact, 'id' | 'favorite'>;
+  contact: Pick<Contact, "id" | "favorite">;
 }>) {
   const fetcher = useFetcher({ key: `contact:${contact.id}` });
   const isFavorite = fetcher.formData
-    ? fetcher.formData.get('favorite') === 'true'
+    ? fetcher.formData.get("favorite") === "true"
     : Boolean(contact.favorite);
 
   if (!isFavorite) {

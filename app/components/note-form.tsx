@@ -4,29 +4,29 @@ import {
   getTextareaProps,
   useForm,
   type SubmissionResult,
-} from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import type { Note } from '@prisma/client';
-import {} from '@radix-ui/react-icons';
-import type { SerializeFrom } from '@remix-run/node';
-import { Form, useNavigation, useSubmit } from '@remix-run/react';
-import { format } from 'date-fns';
-import { useRef } from 'react';
-import { z } from 'zod';
-import { ErrorList } from './forms';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import type { Note } from "@prisma/client";
+import {} from "@radix-ui/react-icons";
+import type { SerializeFrom } from "@remix-run/node";
+import { Form, useNavigation, useSubmit } from "@remix-run/react";
+import { format } from "date-fns";
+import { useRef } from "react";
+import { z } from "zod";
+import { ErrorList } from "./forms";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 export const NoteFormSchema = z.object({
   text: z
-    .string({ required_error: 'Note is required' })
+    .string({ required_error: "Note is required" })
     .trim()
-    .min(1, 'Note is too short'),
+    .min(1, "Note is too short"),
   date: z.coerce
     .date({
-      required_error: 'Date is required',
-      invalid_type_error: 'Date is invalid.',
+      required_error: "Date is required",
+      invalid_type_error: "Date is invalid.",
     })
     .transform((arg) => arg.toISOString()),
 });
@@ -36,12 +36,12 @@ export function NoteForm({
   note,
 }: {
   lastResult: SubmissionResult | undefined;
-  note?: Pick<SerializeFrom<Note>, 'text' | 'date'>;
+  note?: Pick<SerializeFrom<Note>, "text" | "date">;
 }) {
   const editMode = Boolean(note);
 
   const navigation = useNavigation();
-  const isSavingEdits = navigation.formData?.get('intent') === 'editNote';
+  const isSavingEdits = navigation.formData?.get("intent") === "editNote";
 
   const submit = useSubmit();
 
@@ -50,7 +50,7 @@ export function NoteForm({
   const [form, fields] = useForm({
     defaultValue: {
       ...note,
-      date: format(note?.date ?? new Date(), 'yyyy-MM-dd'),
+      date: format(note?.date ?? new Date(), "yyyy-MM-dd"),
     },
     constraint: getZodConstraint(NoteFormSchema),
     lastResult: lastResult,
@@ -66,7 +66,7 @@ export function NoteForm({
 
       const formData = new FormData(event.currentTarget);
       const submission = parseWithZod(formData, { schema: NoteFormSchema });
-      if (submission.status !== 'success') {
+      if (submission.status !== "success") {
         return;
       }
 
@@ -78,7 +78,7 @@ export function NoteForm({
       });
 
       if (textareaRef.current) {
-        textareaRef.current.value = '';
+        textareaRef.current.value = "";
         textareaRef.current.focus();
       }
     },
@@ -95,10 +95,10 @@ export function NoteForm({
           <Textarea
             ref={textareaRef}
             onKeyDown={(event) => {
-              if (event.key === 'Enter') {
+              if (event.key === "Enter") {
                 event.preventDefault();
                 event.currentTarget.form?.dispatchEvent(
-                  new Event('submit', { bubbles: true, cancelable: true }),
+                  new Event("submit", { bubbles: true, cancelable: true }),
                 );
               }
             }}
@@ -116,10 +116,10 @@ export function NoteForm({
             <Input
               className="max-w-fit"
               aria-label="Date"
-              {...getInputProps(fields.date, { type: 'date' })}
+              {...getInputProps(fields.date, { type: "date" })}
             />
             <Button type="submit" size="sm" className="ml-auto">
-              {isSavingEdits ? 'Saving…' : 'Save'}
+              {isSavingEdits ? "Saving…" : "Save"}
             </Button>
           </div>
         </div>

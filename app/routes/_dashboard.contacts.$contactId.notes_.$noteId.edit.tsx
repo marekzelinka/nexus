@@ -1,32 +1,28 @@
-import { parseWithZod } from '@conform-to/zod';
-import { invariant, invariantResponse } from '@epic-web/invariant';
-import { ChevronLeftIcon, TrashIcon } from '@radix-ui/react-icons';
-import {
-  unstable_data as data,
-  redirect,
-  type ActionFunctionArgs,
-} from '@remix-run/node';
+import { parseWithZod } from "@conform-to/zod";
+import { invariant, invariantResponse } from "@epic-web/invariant";
+import { ChevronLeftIcon, TrashIcon } from "@radix-ui/react-icons";
+import { data, redirect, type ActionFunctionArgs } from "@remix-run/node";
 import {
   Form,
   Link,
   useActionData,
   useLoaderData,
   useNavigation,
-} from '@remix-run/react';
-import { NoteForm, NoteFormSchema } from '~/components/note-form';
+} from "@remix-run/react";
+import { NoteForm, NoteFormSchema } from "~/components/note-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-} from '~/components/ui/breadcrumb';
-import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
+} from "~/components/ui/breadcrumb";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
 
 export async function loader({ params }: ActionFunctionArgs) {
-  invariant(params.noteId, 'Missing noteId param');
+  invariant(params.noteId, "Missing noteId param");
   const note = await db.note.findUnique({
     select: { text: true, date: true },
     where: { id: params.noteId },
@@ -35,13 +31,13 @@ export async function loader({ params }: ActionFunctionArgs) {
     status: 404,
   });
 
-  return { note };
+  return data({ note });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
@@ -52,7 +48,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     { status: 404 },
   );
 
-  invariant(params.noteId, 'Missing noteId param');
+  invariant(params.noteId, "Missing noteId param");
   const note = await db.note.findUnique({
     select: { id: true },
     where: { id: params.noteId },
@@ -63,7 +59,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  if (formData.get('intent') === 'deleteNote') {
+  if (formData.get("intent") === "deleteNote") {
     await db.note.delete({
       select: { id: true },
       where: { id: params.noteId },
@@ -71,10 +67,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   } else {
     const submission = parseWithZod(formData, { schema: NoteFormSchema });
 
-    if (submission.status !== 'success') {
+    if (submission.status !== "success") {
       return data(
         { result: submission.reply() },
-        { status: submission.status === 'error' ? 400 : 200 },
+        { status: submission.status === "error" ? 400 : 200 },
       );
     }
 
@@ -90,12 +86,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function Component() {
-  const { note } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { note } = loaderData.data;
 
   const actionData = useActionData<typeof action>();
 
   const navigation = useNavigation();
-  const isDeleting = navigation.formData?.get('intent') === 'deleteNote';
+  const isDeleting = navigation.formData?.get("intent") === "deleteNote";
 
   return (
     <div className="grid gap-2">
@@ -116,13 +113,13 @@ export default function Component() {
           <CardTitle>Edit Note</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-8">
-          <NoteForm lastResult={actionData?.result} note={note} />
+          <NoteForm lastResult={actionData?.data.result} note={note} />
         </CardContent>
       </Card>
       <Form
         method="POST"
         onSubmit={(event) => {
-          const shouldDelete = window.confirm('Are you sure?');
+          const shouldDelete = window.confirm("Are you sure?");
 
           if (!shouldDelete) {
             event.preventDefault();
@@ -133,7 +130,7 @@ export default function Component() {
         <input type="hidden" name="intent" value="deleteNote" />
         <Button size="sm" variant="destructive" disabled={isDeleting}>
           <TrashIcon className="mr-2" aria-hidden />
-          {isDeleting ? 'Deleting…' : 'Delete this note…'}
+          {isDeleting ? "Deleting…" : "Delete this note…"}
         </Button>
       </Form>
     </div>

@@ -1,5 +1,5 @@
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { isRouteErrorResponse, useRouteError } from '@remix-run/react';
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 
 export function GeneralErrorBoundary() {
   const error = useRouteError();
@@ -21,20 +21,20 @@ export function GeneralErrorBoundary() {
 }
 
 function getErrorMessage(error: unknown) {
-  if (typeof error === 'string') {
+  if (typeof error === "string") {
     return error;
   }
 
   if (
     error &&
-    typeof error === 'object' &&
-    'message' in error &&
-    typeof error.message === 'string'
+    typeof error === "object" &&
+    "message" in error &&
+    typeof error.message === "string"
   ) {
     return error.message;
   }
 
-  console.error('Unable to get error message for error', error);
+  console.error("Unable to get error message for error", error);
 
-  return 'Unknown Error';
+  return "Unknown Error";
 }

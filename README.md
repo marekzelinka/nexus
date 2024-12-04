@@ -13,7 +13,7 @@ This project is a small but feature-rich personal CRM. It's written in [TypeScri
 2. Install the dependencies:
 
    ```sh
-   npm install
+   pnpm i
    ```
 
 3. Define required env variables:
@@ -23,7 +23,7 @@ This project is a small but feature-rich personal CRM. It's written in [TypeScri
 4. Run the application in dev mode:
 
    ```sh
-   npm run dev
+   pnpm dev
    ```
 
 ## Goals

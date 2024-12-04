@@ -1,12 +1,12 @@
-import { ExitIcon } from '@radix-ui/react-icons';
-import { Form, Outlet } from '@remix-run/react';
-import { Logo } from '~/components/logo';
-import { Button } from '~/components/ui/button';
+import { ExitIcon } from "@radix-ui/react-icons";
+import { Form, Outlet } from "@remix-run/react";
+import { Logo } from "~/components/logo";
+import { Button } from "~/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '~/components/ui/tooltip';
+} from "~/components/ui/tooltip";
 
 export default function Component() {
   return (
@@ -27,7 +27,7 @@ export default function Component() {
 }
 
 function LogoutForm() {
-  const label = 'Sign out';
+  const label = "Sign out";
 
   return (
     <Form method="post" action="/logout">

@@ -1,10 +1,10 @@
-import type { MetaFunction } from '@remix-run/node';
-import { Link } from '@remix-run/react';
-import { Logo } from '~/components/logo';
-import { buttonVariants } from '~/components/ui/button';
-import { useOptionalUser } from '~/lib/user';
+import type { MetaFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
+import { Logo } from "~/components/logo";
+import { buttonVariants } from "~/components/ui/button";
+import { useOptionalUser } from "~/lib/user";
 
-export const meta: MetaFunction = () => [{ title: 'Welcome' }];
+export const meta: MetaFunction = () => [{ title: "Welcome" }];
 
 export default function Component() {
   const user = useOptionalUser();
@@ -36,7 +36,7 @@ export default function Component() {
               </Link>
               <Link
                 to="/login"
-                className={buttonVariants({ variant: 'ghost' })}
+                className={buttonVariants({ variant: "ghost" })}
               >
                 <span>
                   Log in <span aria-hidden>→</span>

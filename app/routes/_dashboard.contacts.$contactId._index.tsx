@@ -1,18 +1,18 @@
-import { invariant, invariantResponse } from '@epic-web/invariant';
-import { Pencil1Icon } from '@radix-ui/react-icons';
-import { type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, Link, useLoaderData } from '@remix-run/react';
-import { format, formatDistanceStrict } from 'date-fns';
-import { EmptyState } from '~/components/empty-state';
-import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
+import { invariant, invariantResponse } from "@epic-web/invariant";
+import { Pencil1Icon } from "@radix-ui/react-icons";
+import { data, type LoaderFunctionArgs } from "@remix-run/node";
+import { Form, Link, useLoaderData } from "@remix-run/react";
+import { format, formatDistanceStrict } from "date-fns";
+import { EmptyState } from "~/components/empty-state";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: {
       bio: true,
@@ -33,11 +33,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     { status: 404 },
   );
 
-  return { contact };
+  return data({ contact });
 }
 
 export default function Component() {
-  const { contact } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { contact } = loaderData.data;
 
   const isEmpty = Object.values(contact).every((value) => value === null);
 
@@ -145,10 +146,10 @@ export default function Component() {
               <dt className="text-muted-foreground">Birthday</dt>
               <dd className="col-span-2">
                 {contact.birthday ? (
-                  `${format(contact.birthday, 'MMMM d, yyyy')} (${formatDistanceStrict(
+                  `${format(contact.birthday, "MMMM d, yyyy")} (${formatDistanceStrict(
                     contact.birthday,
                     new Date(),
-                    { unit: 'year' },
+                    { unit: "year" },
                   )} old)`
                 ) : (
                   <span className="text-muted-foreground/40">N/A</span>

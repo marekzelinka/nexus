@@ -1,18 +1,19 @@
-import { invariant, invariantResponse } from '@epic-web/invariant';
-import type { Contact } from '@prisma/client';
+import { invariant, invariantResponse } from "@epic-web/invariant";
+import type { Contact } from "@prisma/client";
 import {
   ChevronLeftIcon,
   Pencil1Icon,
   StarFilledIcon,
   StarIcon,
   TrashIcon,
-} from '@radix-ui/react-icons';
+} from "@radix-ui/react-icons";
 import {
+  data,
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
   type MetaFunction,
-} from '@remix-run/node';
+} from "@remix-run/node";
 import {
   Form,
   Link,
@@ -21,36 +22,40 @@ import {
   useFetcher,
   useLoaderData,
   type NavLinkProps,
-} from '@remix-run/react';
-import { GeneralErrorBoundary } from '~/components/error-boundary';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+} from "@remix-run/react";
+import { GeneralErrorBoundary } from "~/components/error-boundary";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-} from '~/components/ui/breadcrumb';
-import { Button } from '~/components/ui/button';
-import { Separator } from '~/components/ui/separator';
-import { Toggle } from '~/components/ui/toggle';
-import { requireUserId } from '~/lib/auth.server';
-import { db } from '~/lib/db.server';
-import { cx } from '~/lib/utils';
+} from "~/components/ui/breadcrumb";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+import { Toggle } from "~/components/ui/toggle";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { cx } from "~/lib/utils";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  {
-    title: data?.contact
-      ? data.contact.first || data.contact.last
-        ? `${data.contact.first ?? ''} ${data.contact.last ?? ''}`.trim()
-        : 'No Name'
-      : 'No contact found',
-  },
-];
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const contact = data?.data.contact;
+
+  return [
+    {
+      title: contact
+        ? contact.first || contact.last
+          ? `${contact.first ?? ""} ${contact.last ?? ""}`.trim()
+          : "No Name"
+        : "No contact found",
+    },
+  ];
+};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true, first: true, last: true, avatar: true, favorite: true },
     where: { id: params.contactId, userId },
@@ -61,13 +66,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     { status: 404 },
   );
 
-  return { contact };
+  return data({ contact });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, 'Missing contactId param');
+  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
@@ -80,30 +85,30 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  if (formData.get('intent') === 'favorite') {
-    const favorite = formData.get('favorite');
+  if (formData.get("intent") === "favorite") {
+    const favorite = formData.get("favorite");
 
     await db.contact.update({
       select: { id: true },
-      data: { favorite: favorite === 'true' },
+      data: { favorite: favorite === "true" },
       where: { id: params.contactId, userId },
     });
 
-    return { ok: true };
+    return data({ ok: true });
   }
 
-  if (formData.get('intent') === 'delete') {
+  if (formData.get("intent") === "delete") {
     await db.contact.delete({
       select: { id: true },
       where: { id: params.contactId, userId },
     });
 
-    return redirect('/contacts');
+    return redirect("/contacts");
   }
 
   invariantResponse(
     false,
-    `Invalid intent: ${formData.get('intent') ?? 'Missing'}`,
+    `Invalid intent: ${formData.get("intent") ?? "Missing"}`,
   );
 }
 
@@ -115,13 +120,14 @@ export function ErrorBoundary() {
   );
 }
 
-const tabs: { name: string; to: NavLinkProps['to'] }[] = [
-  { name: 'Profile', to: '.' },
-  { name: 'Notes', to: 'notes' },
+const tabs: { name: string; to: NavLinkProps["to"] }[] = [
+  { name: "Profile", to: "." },
+  { name: "Notes", to: "notes" },
 ];
 
 export default function Component() {
-  const { contact } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const { contact } = loaderData.data;
 
   return (
     <>
@@ -159,8 +165,8 @@ export default function Component() {
           <div className="ml-5 flex w-full min-w-0 items-center gap-3 pb-1">
             <h1
               className={cx(
-                'text-2xl font-semibold tracking-tight',
-                contact.first || contact.last ? '' : 'text-muted-foreground',
+                "text-2xl font-semibold tracking-tight",
+                contact.first || contact.last ? "" : "text-muted-foreground",
               )}
             >
               {contact.first || contact.last ? (
@@ -168,7 +174,7 @@ export default function Component() {
                   {contact.first} {contact.last}
                 </>
               ) : (
-                'No Name'
+                "No Name"
               )}
             </h1>
             <Favorite contact={contact} />
@@ -184,7 +190,7 @@ export default function Component() {
               method="POST"
               onSubmit={(event) => {
                 const shouldDelete = confirm(
-                  'Please confirm you want to delete this record.',
+                  "Please confirm you want to delete this record.",
                 );
 
                 if (!shouldDelete) {
@@ -209,15 +215,15 @@ export default function Component() {
               <NavLink
                 key={tab.name}
                 to={tab.to}
-                end={tab.to === '.'}
+                end={tab.to === "."}
                 preventScrollReset
                 prefetch="intent"
                 className={({ isActive }) =>
                   cx(
-                    'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+                    "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
                     isActive
-                      ? 'bg-background text-foreground shadow'
-                      : 'text-muted-foreground',
+                      ? "bg-background text-foreground shadow"
+                      : "text-muted-foreground",
                   )
                 }
               >
@@ -234,10 +240,10 @@ export default function Component() {
   );
 }
 
-function Favorite({ contact }: { contact: Pick<Contact, 'id' | 'favorite'> }) {
+function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
   const fetcher = useFetcher({ key: `contact:${contact.id}` });
   const favorite = fetcher.formData
-    ? fetcher.formData.get('favorite') === 'true'
+    ? fetcher.formData.get("favorite") === "true"
     : Boolean(contact.favorite);
 
   return (
@@ -246,13 +252,13 @@ function Favorite({ contact }: { contact: Pick<Contact, 'id' | 'favorite'> }) {
       <input
         type="hidden"
         name="favorite"
-        value={favorite ? 'false' : 'true'}
+        value={favorite ? "false" : "true"}
       />
       <Toggle
         type="submit"
         size="sm"
         pressed={favorite}
-        aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
       >
         {favorite ? <StarFilledIcon aria-hidden /> : <StarIcon aria-hidden />}
       </Toggle>
