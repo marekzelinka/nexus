@@ -13,8 +13,8 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createUserSession, verifyLogin } from "~/lib/auth.server";
-import { composeSafeRedirectUrl } from "~/lib/utils";
+import { createUserSession, verifyLogin } from "~/utils/auth.server";
+import { composeSafeRedirectUrl } from "~/utils/misc";
 import type { Route } from "./+types/_auth.login";
 
 const LoginSchema = z.object({
@@ -40,10 +40,10 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = composeSafeRedirectUrl(url.searchParams.get("redirectTo"));
 
   const formData = await request.formData();
+
   const submission = await parseWithZod(formData, {
     schema: LoginSchema.transform(async (arg, ctx) => {
       const user = await verifyLogin(arg.email, arg.password);
-
       if (!user) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -57,7 +57,6 @@ export async function action({ request }: Route.ActionArgs) {
     }),
     async: true,
   });
-
   if (submission.status !== "success") {
     return data(
       { result: submission.reply({ hideFields: ["password"] }) },

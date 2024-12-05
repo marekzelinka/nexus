@@ -13,9 +13,9 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createUser, createUserSession } from "~/lib/auth.server";
-import { db } from "~/lib/db.server";
-import { composeSafeRedirectUrl } from "~/lib/utils";
+import { createUser, createUserSession } from "~/utils/auth.server";
+import { db } from "~/utils/db.server";
+import { composeSafeRedirectUrl } from "~/utils/misc";
 import type { Route } from "./+types/_auth.join";
 
 const CreateAccountSchema = z.object({
@@ -62,13 +62,13 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = composeSafeRedirectUrl(url.searchParams.get("redirectTo"));
 
   const formData = await request.formData();
+
   const submission = await parseWithZod(formData, {
     schema: CreateAccountSchema.superRefine(async (arg, ctx) => {
       const userWithSameEmail = await db.user.findUnique({
         select: { id: true },
         where: { email: arg.email },
       });
-
       if (userWithSameEmail) {
         ctx.addIssue({
           path: ["email"],
@@ -83,7 +83,6 @@ export async function action({ request }: Route.ActionArgs) {
         select: { id: true },
         where: { username: arg.username },
       });
-
       if (userWithSameUsername) {
         ctx.addIssue({
           path: ["username"],
@@ -96,7 +95,6 @@ export async function action({ request }: Route.ActionArgs) {
     }),
     async: true,
   });
-
   if (submission.status !== "success") {
     return data(
       { result: submission.reply({ hideFields: ["password"] }) },

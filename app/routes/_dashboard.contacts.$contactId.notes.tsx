@@ -15,9 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { requireUserId } from "~/lib/auth.server";
-import { db } from "~/lib/db.server";
-import { useClipboard } from "~/lib/utils";
+import { requireUserId } from "~/utils/auth.server";
+import { db } from "~/utils/db.server";
+import { useClipboard } from "~/utils/misc";
 import type { Route } from "./+types/_dashboard.contacts.$contactId.notes";
 
 type LoaderData = Route.ComponentProps["loaderData"];
@@ -48,8 +48,8 @@ export async function action({ request, params }: Route.ActionArgs) {
   );
 
   const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: NoteFormSchema });
 
+  const submission = parseWithZod(formData, { schema: NoteFormSchema });
   if (submission.status !== "success") {
     return data(
       { result: submission.reply() },
@@ -83,9 +83,9 @@ export default function Component({ actionData }: Route.ComponentProps) {
 
 function NoteSavingIndicator() {
   const optimisticNotes = useOptimisticNotes();
-  const showShowIndicator = useSpinDelay(optimisticNotes.length > 0);
 
-  if (!showShowIndicator) {
+  const shouldShow = useSpinDelay(optimisticNotes.length > 0);
+  if (!shouldShow) {
     return null;
   }
 

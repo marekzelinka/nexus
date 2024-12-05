@@ -1,4 +1,4 @@
-import { cx } from "~/lib/utils";
+import { cx } from "~/utils/misc";
 
 export type ListOfErrors = Array<string | null | undefined> | null | undefined;
 
@@ -12,7 +12,6 @@ export function ErrorList({
   className?: string;
 }) {
   const errorsToShow = errors?.filter(Boolean);
-
   if (!errorsToShow?.length) {
     return null;
   }

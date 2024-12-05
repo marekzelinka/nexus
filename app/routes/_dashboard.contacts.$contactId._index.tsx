@@ -5,8 +5,8 @@ import { Form, Link } from "react-router";
 import { EmptyState } from "~/components/empty-state";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { requireUserId } from "~/lib/auth.server";
-import { db } from "~/lib/db.server";
+import { requireUserId } from "~/utils/auth.server";
+import { db } from "~/utils/db.server";
 import type { Route } from "./+types/_dashboard.contacts.$contactId._index";
 
 export async function loader({ request, params }: Route.LoaderArgs) {

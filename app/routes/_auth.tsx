@@ -1,5 +1,5 @@
 import { Outlet, redirect } from "react-router";
-import { getUserId } from "~/lib/auth.server";
+import { getUserId } from "~/utils/auth.server";
 import type { Route } from "./+types/_auth";
 
 export async function loader({ request }: Route.LoaderArgs) {

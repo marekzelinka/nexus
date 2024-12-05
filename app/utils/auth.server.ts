@@ -17,13 +17,11 @@ export async function getUserId(
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
-
   if (!userId) {
     return null;
   }
 
   const user = await db.user.findUnique({ where: { id: userId } });
-
   if (!user) {
     throw await logout(request);
   }
@@ -36,7 +34,6 @@ export async function requireUserId(
   redirectTo: string = new URL(request.url).pathname,
 ) {
   const userId = await getUserId(request);
-
   if (!userId) {
     const loginParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${loginParams}`);
@@ -48,7 +45,6 @@ export async function requireUserId(
 export async function requireUser(request: Request) {
   const userId = await requireUserId(request);
   const user = await db.user.findUnique({ where: { id: userId } });
-
   if (!user) {
     throw await logout(request);
   }
@@ -109,7 +105,6 @@ export async function verifyLogin(
     include: { password: true },
     where: { email },
   });
-
   if (!userWithPassword?.password) {
     return null;
   }
@@ -118,7 +113,6 @@ export async function verifyLogin(
     password,
     userWithPassword.password.hash,
   );
-
   if (!isValid) {
     return null;
   }

@@ -1,5 +1,5 @@
 import { forwardRef, type ComponentProps } from "react";
-import { cx } from "~/lib/utils";
+import { cx } from "~/utils/misc";
 
 export const Textarea = forwardRef<
   HTMLTextAreaElement,

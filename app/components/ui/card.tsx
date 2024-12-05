@@ -1,6 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import { forwardRef, type HTMLAttributes } from "react";
-import { cx } from "~/lib/utils";
+import { cx } from "~/utils/misc";
 
 export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (

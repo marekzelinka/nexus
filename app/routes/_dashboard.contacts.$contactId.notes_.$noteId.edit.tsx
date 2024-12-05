@@ -11,8 +11,8 @@ import {
 } from "~/components/ui/breadcrumb";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { requireUserId } from "~/lib/auth.server";
-import { db } from "~/lib/db.server";
+import { requireUserId } from "~/utils/auth.server";
+import { db } from "~/utils/db.server";
 import type { Route } from "./+types/_dashboard.contacts.$contactId.notes_.$noteId.edit";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -60,7 +60,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     });
   } else {
     const submission = parseWithZod(formData, { schema: NoteFormSchema });
-
     if (submission.status !== "success") {
       return data(
         { result: submission.reply() },
@@ -114,7 +113,6 @@ export default function Component({
         method="POST"
         onSubmit={(event) => {
           const shouldDelete = window.confirm("Are you sure?");
-
           if (!shouldDelete) {
             event.preventDefault();
           }

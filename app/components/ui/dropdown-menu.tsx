@@ -10,7 +10,7 @@ import {
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-import { cx } from "~/lib/utils";
+import { cx } from "~/utils/misc";
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 

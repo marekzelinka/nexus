@@ -27,9 +27,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { Toggle } from "~/components/ui/toggle";
-import { requireUserId } from "~/lib/auth.server";
-import { db } from "~/lib/db.server";
-import { cx } from "~/lib/utils";
+import { requireUserId } from "~/utils/auth.server";
+import { db } from "~/utils/db.server";
+import { cx } from "~/utils/misc";
 import type { Route } from "./+types/_dashboard.contacts.$contactId";
 
 export const meta: Route.MetaFunction = ({ data, error }) => {
@@ -183,7 +183,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 const shouldDelete = confirm(
                   "Please confirm you want to delete this record.",
                 );
-
                 if (!shouldDelete) {
                   event.preventDefault();
                 }
