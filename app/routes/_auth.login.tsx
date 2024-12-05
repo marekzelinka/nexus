@@ -1,11 +1,6 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import {
-  data,
-  type ActionFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { data, Form, Link, useSearchParams } from "react-router";
 import { z } from "zod";
 import { ErrorList } from "~/components/forms";
 import { Logo } from "~/components/logo";
@@ -14,6 +9,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { createUserSession, verifyLogin } from "~/lib/auth.server";
 import { composeSafeRedirectUrl } from "~/lib/utils";
+import type { Route } from "./+types/_auth.login";
 
 const LoginSchema = z.object({
   email: z
@@ -29,9 +25,11 @@ const LoginSchema = z.object({
     .min(6, "Password is too short"),
 });
 
-export const meta: MetaFunction = () => [{ title: "Login" }];
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Login" }];
+};
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const url = new URL(request.url);
   const redirectTo = composeSafeRedirectUrl(url.searchParams.get("redirectTo"));
 
@@ -63,7 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { user } = submission.value;
 
-  return createUserSession({
+  throw createUserSession({
     request,
     userId: user.id,
     remember: true,
@@ -71,9 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 }
 
-export default function Component() {
-  const actionData = useActionData<typeof action>();
-
+export default function Component({ actionData }: Route.ComponentProps) {
   const [form, fields] = useForm({
     constraint: getZodConstraint(LoginSchema),
     lastResult: actionData?.result,

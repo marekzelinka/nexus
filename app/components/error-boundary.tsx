@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "react-router";
 
 export function GeneralErrorBoundary() {
   const error = useRouteError();

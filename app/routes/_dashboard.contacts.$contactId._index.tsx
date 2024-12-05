@@ -1,15 +1,15 @@
 import { invariant, invariantResponse } from "@epic-web/invariant";
 import { Pencil1Icon } from "@radix-ui/react-icons";
-import { type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
 import { format, formatDistanceStrict } from "date-fns";
+import { Form, Link } from "react-router";
 import { EmptyState } from "~/components/empty-state";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
+import type { Route } from "./+types/_dashboard.contacts.$contactId._index";
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -36,8 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return { contact };
 }
 
-export default function Component() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Component({ loaderData }: Route.ComponentProps) {
   const { contact } = loaderData;
 
   const isEmpty = Object.values(contact).every((value) => value === null);

@@ -8,20 +8,14 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import {
-  redirect,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
-import {
   Form,
   Link,
   NavLink,
   Outlet,
+  redirect,
   useFetcher,
-  useLoaderData,
   type NavLinkProps,
-} from "@remix-run/react";
+} from "react-router";
 import { GeneralErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -36,18 +30,21 @@ import { Toggle } from "~/components/ui/toggle";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
 import { cx } from "~/lib/utils";
+import type { Route } from "./+types/_dashboard.contacts.$contactId";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  {
-    title: data?.contact
-      ? data.contact.first || data.contact.last
-        ? `${data.contact.first ?? ""} ${data.contact.last ?? ""}`.trim()
-        : "No Name"
-      : "No contact found",
-  },
-];
+export const meta: Route.MetaFunction = ({ data, error }) => {
+  return [
+    {
+      title: error
+        ? "No contact found"
+        : data.contact.first || data.contact.last
+          ? `${data.contact.first ?? ""} ${data.contact.last ?? ""}`.trim()
+          : "No Name",
+    },
+  ];
+};
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -64,7 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return { contact };
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -120,8 +117,7 @@ const tabs: { name: string; to: NavLinkProps["to"] }[] = [
   { name: "Notes", to: "notes" },
 ];
 
-export default function Component() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Component({ loaderData }: Route.ComponentProps) {
   const { contact } = loaderData;
 
   return (

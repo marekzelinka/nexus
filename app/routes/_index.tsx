@@ -1,10 +1,12 @@
-import type { MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Logo } from "~/components/logo";
 import { buttonVariants } from "~/components/ui/button";
 import { useOptionalUser } from "~/lib/user";
+import type { Route } from "./+types/_index";
 
-export const meta: MetaFunction = () => [{ title: "Welcome" }];
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Welcome" }];
+};
 
 export default function Component() {
   const user = useOptionalUser();

@@ -1,20 +1,9 @@
 import { parseWithZod } from "@conform-to/zod";
 import { invariant, invariantResponse } from "@epic-web/invariant";
 import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
-import {
-  data,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-} from "@remix-run/node";
-import {
-  Link,
-  useActionData,
-  useFetchers,
-  useLoaderData,
-} from "@remix-run/react";
 import { compareAsc, format, isToday, isYesterday } from "date-fns";
 import { useState } from "react";
+import { data, Link, useFetchers, useLoaderData } from "react-router";
 import { useSpinDelay } from "spin-delay";
 import { EmptyState } from "~/components/empty-state";
 import { NoteForm, NoteFormSchema } from "~/components/note-form";
@@ -29,11 +18,12 @@ import {
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
 import { useClipboard } from "~/lib/utils";
+import type { Route } from "./+types/_dashboard.contacts.$contactId.notes";
 
-type LoaderData = SerializeFrom<typeof loader>;
+type LoaderData = Route.ComponentProps["loaderData"];
 type Note = LoaderData["notes"][number];
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   invariant(params.contactId, "Missing contactId param");
   const notes = await db.note.findMany({
     select: { id: true, text: true, date: true, createdAt: true },
@@ -43,7 +33,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { notes };
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -76,9 +66,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return { result: submission.reply({ resetForm: true }) };
 }
 
-export default function Component() {
-  const actionData = useActionData<typeof action>();
-
+export default function Component({ actionData }: Route.ComponentProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">

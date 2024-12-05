@@ -1,16 +1,14 @@
-import { type LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import type { Route } from "./+types/root";
+import stylesheet from "./app.css?url";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { getUser } from "./lib/auth.server";
-import "./tailwind.css";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export const links: Route.LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+];
+
+export async function loader({ request }: Route.LoaderArgs) {
   const user = await getUser(request);
 
   return { user };

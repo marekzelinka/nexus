@@ -1,14 +1,7 @@
 import { parseWithZod } from "@conform-to/zod";
 import { invariant, invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon, TrashIcon } from "@radix-ui/react-icons";
-import { data, redirect, type ActionFunctionArgs } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-} from "@remix-run/react";
+import { data, Form, Link, redirect, useNavigation } from "react-router";
 import { NoteForm, NoteFormSchema } from "~/components/note-form";
 import {
   Breadcrumb,
@@ -20,8 +13,9 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
+import type { Route } from "./+types/_dashboard.contacts.$contactId.notes_.$noteId.edit";
 
-export async function loader({ params }: ActionFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   invariant(params.noteId, "Missing noteId param");
   const note = await db.note.findUnique({
     select: { text: true, date: true },
@@ -34,7 +28,7 @@ export async function loader({ params }: ActionFunctionArgs) {
   return { note };
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -82,14 +76,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
   }
 
-  return redirect(`/contacts/${params.contactId}/notes`);
+  throw redirect(`/contacts/${params.contactId}/notes`);
 }
 
-export default function Component() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Component({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { note } = loaderData;
-
-  const actionData = useActionData<typeof action>();
 
   const navigation = useNavigation();
   const isDeleting = navigation.formData?.get("intent") === "deleteNote";

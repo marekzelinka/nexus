@@ -7,21 +7,8 @@ import {
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { invariant, invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
-import {
-  data,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
-import {
-  Form,
-  Link,
-  redirect,
-  useActionData,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react";
 import { format } from "date-fns";
+import { data, Form, Link, redirect, useNavigate } from "react-router";
 import { z } from "zod";
 import { GeneralErrorBoundary } from "~/components/error-boundary";
 import { ErrorList } from "~/components/forms";
@@ -38,6 +25,7 @@ import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
+import type { Route } from "./+types/_dashboard.contacts.$contactId_.edit";
 
 const EditContactSchema = z.object({
   first: z
@@ -110,11 +98,11 @@ const EditContactSchema = z.object({
     .transform((arg) => arg?.toISOString() || null),
 });
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: data ? "Edit contact" : "No contact found" }];
+export const meta = ({ error }: Route.MetaArgs) => {
+  return [{ title: error ? "No contact found" : "Edit contact" }];
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -145,7 +133,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return { contact };
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
   invariant(params.contactId, "Missing contactId param");
@@ -176,7 +164,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     where: { id: params.contactId, userId },
   });
 
-  return redirect(`/contacts/${params.contactId}`);
+  throw redirect(`/contacts/${params.contactId}`);
 }
 
 export function ErrorBoundary() {
@@ -187,11 +175,11 @@ export function ErrorBoundary() {
   );
 }
 
-export default function Component() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Component({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { contact } = loaderData;
-
-  const actionData = useActionData<typeof action>();
 
   const [form, fields] = useForm({
     defaultValue: {

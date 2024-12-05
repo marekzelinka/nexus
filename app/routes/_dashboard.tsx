@@ -1,5 +1,5 @@
 import { ExitIcon } from "@radix-ui/react-icons";
-import { Form, Outlet } from "@remix-run/react";
+import { Form, Outlet } from "react-router";
 import { Logo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import {

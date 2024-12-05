@@ -1,6 +1,6 @@
 import type { Password, User } from "@prisma/client";
-import { redirect, redirectDocument } from "@remix-run/node";
 import bcrypt from "bcryptjs";
+import { redirect, redirectDocument } from "react-router";
 import { db } from "./db.server";
 import { authSessionStorage, getAuthSession } from "./session.server";
 

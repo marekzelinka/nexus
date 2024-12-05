@@ -7,11 +7,9 @@ import {
 } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import type { Note } from "@prisma/client";
-import {} from "@radix-ui/react-icons";
-import type { SerializeFrom } from "@remix-run/node";
-import { Form, useNavigation, useSubmit } from "@remix-run/react";
 import { format } from "date-fns";
 import { useRef } from "react";
+import { Form, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 import { ErrorList } from "./forms";
 import { Button } from "./ui/button";
@@ -36,7 +34,7 @@ export function NoteForm({
   note,
 }: {
   lastResult: SubmissionResult | undefined;
-  note?: Pick<SerializeFrom<Note>, "text" | "date">;
+  note?: Pick<Note, "text" | "date">;
 }) {
   const editMode = Boolean(note);
 
@@ -74,7 +72,7 @@ export function NoteForm({
         method: context.method,
         fetcherKey: window.crypto.randomUUID(),
         navigate: false,
-        unstable_flushSync: true,
+        flushSync: true,
       });
 
       if (textareaRef.current) {

@@ -1,5 +1,5 @@
 import { invariant } from "@epic-web/invariant";
-import { createCookieSessionStorage } from "@remix-run/node";
+import { createCookieSessionStorage } from "react-router";
 
 invariant(process.env.SESSION_SECRET, "Missing SESSION_SECRET env var");
 

@@ -5,26 +5,20 @@ import {
   StarFilledIcon,
   UpdateIcon,
 } from "@radix-ui/react-icons";
-import {
-  redirect,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
-import {
-  Form,
-  NavLink,
-  Outlet,
-  useFetcher,
-  useLoaderData,
-  useNavigation,
-  useSearchParams,
-  useSubmit,
-} from "@remix-run/react";
 import { matchSorter } from "match-sorter";
 import type { PropsWithChildren } from "react";
 import { useEffect, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import {
+  Form,
+  NavLink,
+  Outlet,
+  redirect,
+  useFetcher,
+  useNavigation,
+  useSearchParams,
+  useSubmit,
+} from "react-router";
 import sortBy from "sort-by";
 import { useSpinDelay } from "spin-delay";
 import { Button } from "~/components/ui/button";
@@ -33,10 +27,13 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
 import { cx } from "~/lib/utils";
+import type { Route } from "./+types/_dashboard.contacts";
 
-export const meta: MetaFunction = () => [{ title: "Contacts" }];
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Contacts" }];
+};
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
   const url = new URL(request.url);
@@ -56,7 +53,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { contacts };
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
   const contact = await db.contact.create({
@@ -67,8 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/contacts/${contact.id}/edit`);
 }
 
-export default function Component() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Component({ loaderData }: Route.ComponentProps) {
   const { contacts } = loaderData;
 
   return (
