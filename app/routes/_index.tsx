@@ -16,29 +16,29 @@ export default function Component() {
       <div className="mx-auto w-full max-w-xl">
         <Logo className="mx-auto h-9 w-auto" />
         <div className="mt-6 text-center">
-          <h1 className="text-balance text-3xl font-semibold">
+          <h1 className="text-balance text-4xl font-bold leading-[1.1] tracking-tighter">
             Supercharge your relationships
           </h1>
-          <p className="mt-4 text-pretty text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-pretty text-lg font-light text-foreground">
             Keep in touch with your personal and professional relationships.
             Move beyond the CRM&mdash;impress with thoughtfulness.
           </p>
         </div>
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="mt-2 flex justify-center gap-2">
           {user ? (
-            <Link to="/contacts" className={buttonVariants()}>
+            <Link to="/contacts" className={buttonVariants({ size: "sm" })}>
               <span>
                 Continue to contacts <span aria-hidden>→</span>
               </span>
             </Link>
           ) : (
             <>
-              <Link to="/join" className={buttonVariants()}>
+              <Link to="/join" className={buttonVariants({ size: "sm" })}>
                 Get started
               </Link>
               <Link
                 to="/login"
-                className={buttonVariants({ variant: "ghost" })}
+                className={buttonVariants({ size: "sm", variant: "ghost" })}
               >
                 <span>
                   Log in <span aria-hidden>→</span>

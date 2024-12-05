@@ -69,7 +69,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <main className="h-full bg-muted/40 pl-96">
+      <main className="h-full pl-96">
         <ContactLoadingOverlay>
           <Outlet />
         </ContactLoadingOverlay>

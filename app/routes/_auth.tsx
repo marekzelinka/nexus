@@ -4,7 +4,6 @@ import type { Route } from "./+types/_auth";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
-
   if (userId) {
     throw redirect("/");
   }

@@ -1,3 +1,4 @@
+import { Slot } from "@radix-ui/react-slot";
 import { forwardRef, type HTMLAttributes } from "react";
 import { cx } from "~/lib/utils";
 
@@ -21,30 +22,35 @@ export const CardHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cx("flex flex-col gap-1.5 p-6", className)}
+    className={cx("flex flex-col gap-y-1.5 p-6", className)}
     {...props}
   />
 ));
 CardHeader.displayName = "CardHeader";
 
 export const CardTitle = forwardRef<
-  HTMLParagraphElement,
-  HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  // eslint-disable-next-line jsx-a11y/heading-has-content
-  <h3
-    ref={ref}
-    className={cx("font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-));
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement> & {
+    asChild?: boolean;
+  }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div";
+
+  return (
+    <Comp
+      ref={ref}
+      className={cx("font-semibold leading-none tracking-tight", className)}
+      {...props}
+    />
+  );
+});
 CardTitle.displayName = "CardTitle";
 
 export const CardDescription = forwardRef<
-  HTMLParagraphElement,
-  HTMLAttributes<HTMLParagraphElement>
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <p
+  <div
     ref={ref}
     className={cx("text-sm text-muted-foreground", className)}
     {...props}
@@ -62,7 +68,7 @@ CardContent.displayName = "CardContent";
 
 export const CardFooter = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}

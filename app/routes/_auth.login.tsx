@@ -3,8 +3,14 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { data, Form, Link, useSearchParams } from "react-router";
 import { z } from "zod";
 import { ErrorList } from "~/components/forms";
-import { Logo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { createUserSession, verifyLogin } from "~/lib/auth.server";
@@ -83,17 +89,16 @@ export default function Component({ actionData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
 
   return (
-    <>
-      <div className="mx-auto w-full max-w-[400px]">
-        <Logo className="mx-auto h-9 w-auto" />
-        <div className="mt-6 text-center">
-          <h1 className="text-3xl font-bold">Login</h1>
-          <p className="mt-2 text-muted-foreground">
-            Enter your email below to login to your account
-          </p>
-        </div>
-      </div>
-      <div className="mx-auto mt-6 w-full max-w-[400px]">
+    <Card className="mx-auto max-w-sm">
+      <CardHeader>
+        <CardTitle asChild className="text-2xl">
+          <h1>Login</h1>
+        </CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <Form method="post" {...getFormProps(form)}>
           <div className="grid gap-4">
             <div className="grid gap-2">
@@ -120,23 +125,21 @@ export default function Component({ actionData }: Route.ComponentProps) {
               />
             </div>
             <ErrorList id={form.errorId} errors={form.errors} />
-            <div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </div>
         </Form>
-      </div>
-      <p className="mt-4 text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <Link
-          to={{ pathname: "/join", search: searchParams.toString() }}
-          className="underline"
-        >
-          Sign up
-        </Link>
-      </p>
-    </>
+        <p className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link
+            to={{ pathname: "/join", search: searchParams.toString() }}
+            className="underline"
+          >
+            Sign up
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
   );
 }

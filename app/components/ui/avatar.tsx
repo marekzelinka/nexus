@@ -27,7 +27,7 @@ export const AvatarImage = forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cx("aspect-square h-full w-full", className)}
+    className={cx("aspect-square size-full", className)}
     {...props}
   />
 ));
@@ -40,7 +40,7 @@ export const AvatarFallback = forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cx(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      "flex size-full items-center justify-center rounded-full bg-muted",
       className,
     )}
     {...props}

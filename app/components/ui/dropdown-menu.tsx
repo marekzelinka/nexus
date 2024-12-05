@@ -33,14 +33,14 @@ export const DropdownMenuSubTrigger = forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cx(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent",
+      "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
       inset ? "pl-8" : "",
       className,
     )}
     {...props}
   >
     {children}
-    <ChevronRightIcon className="ml-auto" aria-hidden />
+    <ChevronRightIcon className="ml-auto" />
   </DropdownMenuPrimitive.SubTrigger>
 ));
 DropdownMenuSubTrigger.displayName =
@@ -71,7 +71,8 @@ export const DropdownMenuContent = forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cx(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className,
       )}
       {...props}
@@ -89,7 +90,7 @@ export const DropdownMenuItem = forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cx(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
       inset ? "pl-8" : "",
       className,
     )}
@@ -112,8 +113,8 @@ export const DropdownMenuCheckboxItem = forwardRef<
     {...props}
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
-      <DropdownMenuPrimitive.ItemIndicator>
-        <CheckIcon aria-hidden />
+      <DropdownMenuPrimitive.ItemIndicator className="[&>svg]:size-4">
+        <CheckIcon />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -135,8 +136,8 @@ export const DropdownMenuRadioItem = forwardRef<
     {...props}
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
-      <DropdownMenuPrimitive.ItemIndicator>
-        <DotFilledIcon className="fill-current" aria-hidden />
+      <DropdownMenuPrimitive.ItemIndicator className="[&>svg]:size-2">
+        <DotFilledIcon className="fill-current" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -174,15 +175,13 @@ export const DropdownMenuSeparator = forwardRef<
 ));
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
-export function DropdownMenuShortcut({
+export const DropdownMenuShortcut = ({
   className,
   ...props
-}: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx("ml-auto text-xs tracking-widest opacity-60", className)}
-      {...props}
-    />
-  );
-}
+}: HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx("ml-auto text-xs tracking-widest opacity-60", className)}
+    {...props}
+  />
+);
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut";

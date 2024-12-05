@@ -15,7 +15,7 @@ export const ScrollArea = forwardRef<
     className={cx("relative overflow-hidden", className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="size-full rounded-[inherit]">
+    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />
@@ -33,12 +33,10 @@ export const ScrollBar = forwardRef<
     orientation={orientation}
     className={cx(
       "flex touch-none select-none transition-colors",
-      orientation === "vertical"
-        ? "h-full w-2.5 border-l border-l-transparent p-[1px]"
-        : "",
-      orientation === "horizontal"
-        ? "h-2.5 flex-col border-t border-t-transparent p-[1px]"
-        : "",
+      orientation === "vertical" &&
+        "h-full w-2.5 border-l border-l-transparent p-[1px]",
+      orientation === "horizontal" &&
+        "h-2.5 flex-col border-t border-t-transparent p-[1px]",
       className,
     )}
     {...props}

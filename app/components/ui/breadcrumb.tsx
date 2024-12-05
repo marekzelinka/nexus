@@ -68,41 +68,45 @@ export const BreadcrumbPage = forwardRef<
   <span
     ref={ref}
     role="link"
-    aria-disabled
-    aria-current="page"
     className={cx("font-normal text-foreground", className)}
+    aria-disabled="true"
+    aria-current="page"
     {...props}
   />
 ));
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
-export function BreadcrumbSeparator({
+export const BreadcrumbSeparator = ({
   children,
   className,
   ...props
-}: ComponentProps<"li">) {
-  return (
-    <li role="presentation" className={className} aria-hidden {...props}>
-      {children ?? <ChevronRightIcon aria-hidden />}
-    </li>
-  );
-}
+}: ComponentProps<"li">) => (
+  <li
+    role="presentation"
+    className={cx("[&_svg]:size-4", className)}
+    aria-hidden
+    {...props}
+  >
+    {children ?? <ChevronRightIcon />}
+  </li>
+);
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 
-export function BreadcrumbEllipsis({
+export const BreadcrumbEllipsis = ({
   className,
   ...props
-}: ComponentProps<"span">) {
-  return (
-    <span
-      role="presentation"
-      className={cx("flex h-9 w-9 items-center justify-center", className)}
-      aria-label="More"
-      aria-hidden
-      {...props}
-    >
-      <DotsHorizontalIcon aria-hidden />
-    </span>
-  );
-}
+}: ComponentProps<"span">) => (
+  <span
+    role="presentation"
+    aria-hidden="true"
+    className={cx(
+      "flex size-9 items-center justify-center [&_svg]:size-4 [&_svg]:shrink-0",
+      className,
+    )}
+    {...props}
+  >
+    <DotsHorizontalIcon />
+    <span className="sr-only">More</span>
+  </span>
+);
 BreadcrumbEllipsis.displayName = "BreadcrumbElipssis";
