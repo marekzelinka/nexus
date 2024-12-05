@@ -1,4 +1,4 @@
-import { data, redirect, type LoaderFunctionArgs } from "@remix-run/node";
+import { redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { getUserId } from "~/lib/auth.server";
 
@@ -9,7 +9,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect("/");
   }
 
-  return data({});
+  return {};
 }
 
 export default function Component() {

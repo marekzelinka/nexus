@@ -6,7 +6,6 @@ import {
   UpdateIcon,
 } from "@radix-ui/react-icons";
 import {
-  data,
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -54,7 +53,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   contacts = contacts.sort(sortBy("last", "createdAt"));
 
-  return data({ contacts });
+  return { contacts };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -70,7 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Component() {
   const loaderData = useLoaderData<typeof loader>();
-  const { contacts } = loaderData.data;
+  const { contacts } = loaderData;
 
   return (
     <>

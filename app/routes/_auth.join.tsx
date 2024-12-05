@@ -117,7 +117,7 @@ export default function Component() {
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(CreateAccountSchema),
-    lastResult: actionData?.data.result,
+    lastResult: actionData?.result,
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
     onValidate: ({ formData }) => {

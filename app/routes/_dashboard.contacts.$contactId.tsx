@@ -8,7 +8,6 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import {
-  data,
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -38,19 +37,15 @@ import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
 import { cx } from "~/lib/utils";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const contact = data?.data.contact;
-
-  return [
-    {
-      title: contact
-        ? contact.first || contact.last
-          ? `${contact.first ?? ""} ${contact.last ?? ""}`.trim()
-          : "No Name"
-        : "No contact found",
-    },
-  ];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  {
+    title: data?.contact
+      ? data.contact.first || data.contact.last
+        ? `${data.contact.first ?? ""} ${data.contact.last ?? ""}`.trim()
+        : "No Name"
+      : "No contact found",
+  },
+];
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
@@ -66,7 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     { status: 404 },
   );
 
-  return data({ contact });
+  return { contact };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -94,7 +89,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       where: { id: params.contactId, userId },
     });
 
-    return data({ ok: true });
+    return { ok: true };
   }
 
   if (formData.get("intent") === "delete") {
@@ -127,7 +122,7 @@ const tabs: { name: string; to: NavLinkProps["to"] }[] = [
 
 export default function Component() {
   const loaderData = useLoaderData<typeof loader>();
-  const { contact } = loaderData.data;
+  const { contact } = loaderData;
 
   return (
     <>

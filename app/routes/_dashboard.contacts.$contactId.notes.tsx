@@ -31,7 +31,7 @@ import { db } from "~/lib/db.server";
 import { useClipboard } from "~/lib/utils";
 
 type LoaderData = SerializeFrom<typeof loader>;
-type Note = LoaderData["data"]["notes"][number];
+type Note = LoaderData["notes"][number];
 
 export async function loader({ params }: LoaderFunctionArgs) {
   invariant(params.contactId, "Missing contactId param");
@@ -40,7 +40,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     where: { contactId: params.contactId },
   });
 
-  return data({ notes });
+  return { notes };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -73,7 +73,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     data: { text, date, contact: { connect: { id: params.contactId } } },
   });
 
-  return data({ result: submission.reply({ resetForm: true }) });
+  return { result: submission.reply({ resetForm: true }) };
 }
 
 export default function Component() {
@@ -86,7 +86,7 @@ export default function Component() {
         <NoteSavingIndicator />
       </CardHeader>
       <CardContent className="grid gap-8">
-        <NoteForm lastResult={actionData?.data.result} />
+        <NoteForm lastResult={actionData?.result} />
         <NoteList />
       </CardContent>
     </Card>
@@ -108,7 +108,7 @@ function NoteSavingIndicator() {
 
 function NoteList() {
   const loaderData = useLoaderData<typeof loader>();
-  const { notes } = loaderData.data;
+  const { notes } = loaderData;
 
   const optimisticNotes = useOptimisticNotes();
   const notesById = new Map(notes.map((note) => [note.id, note]));
@@ -159,8 +159,8 @@ function useOptimisticNotes() {
       return {
         ...submission.value,
         id: fetcher.key,
-        date: new Date(submission.value.date).toISOString(),
-        createdAt: new Date().toISOString(),
+        date: new Date(submission.value.date),
+        createdAt: new Date(),
       };
     })
     .filter((note) => note !== null);

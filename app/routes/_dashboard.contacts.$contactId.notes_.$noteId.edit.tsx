@@ -31,7 +31,7 @@ export async function loader({ params }: ActionFunctionArgs) {
     status: 404,
   });
 
-  return data({ note });
+  return { note };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -87,7 +87,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function Component() {
   const loaderData = useLoaderData<typeof loader>();
-  const { note } = loaderData.data;
+  const { note } = loaderData;
 
   const actionData = useActionData<typeof action>();
 
@@ -113,7 +113,7 @@ export default function Component() {
           <CardTitle>Edit Note</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-8">
-          <NoteForm lastResult={actionData?.data.result} note={note} />
+          <NoteForm lastResult={actionData?.result} note={note} />
         </CardContent>
       </Card>
       <Form

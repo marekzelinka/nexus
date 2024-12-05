@@ -142,7 +142,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     { status: 404 },
   );
 
-  return data({ contact });
+  return { contact };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -189,7 +189,7 @@ export function ErrorBoundary() {
 
 export default function Component() {
   const loaderData = useLoaderData<typeof loader>();
-  const { contact } = loaderData.data;
+  const { contact } = loaderData;
 
   const actionData = useActionData<typeof action>();
 
@@ -201,7 +201,7 @@ export default function Component() {
         : null,
     },
     constraint: getZodConstraint(EditContactSchema),
-    lastResult: actionData?.data.result,
+    lastResult: actionData?.result,
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
     onValidate: ({ formData }) => {
