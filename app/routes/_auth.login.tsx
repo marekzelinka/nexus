@@ -61,7 +61,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   const { user } = submission.value;
 
-  throw createUserSession({
+  throw await createUserSession({
     request,
     userId: user.id,
     remember: true,

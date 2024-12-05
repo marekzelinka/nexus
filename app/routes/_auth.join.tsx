@@ -102,7 +102,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   const user = await createUser({ username, first, last, email, password });
 
-  throw createUserSession({
+  throw await createUserSession({
     request,
     userId: user.id,
     remember: false,
