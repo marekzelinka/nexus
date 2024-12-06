@@ -1,5 +1,4 @@
 import { parseWithZod } from "@conform-to/zod";
-import { invariantResponse } from "@epic-web/invariant";
 import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { compareAsc, format, isToday, isYesterday } from "date-fns";
 import { useState } from "react";
@@ -39,11 +38,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     select: { id: true },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   const formData = await request.formData();
 
@@ -56,6 +55,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const { text, date } = submission.value;
+
   await db.note.create({
     select: { id: true },
     data: { text, date, contact: { connect: { id: params.contactId } } },

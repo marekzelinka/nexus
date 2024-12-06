@@ -5,7 +5,6 @@ import {
   useForm,
 } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { data, Form, Link, redirect, useNavigate } from "react-router";
@@ -123,11 +122,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   return { contact };
 }
@@ -139,11 +138,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     select: { id: true },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   const formData = await request.formData();
 

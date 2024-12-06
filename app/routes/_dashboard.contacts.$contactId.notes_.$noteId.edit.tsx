@@ -1,5 +1,4 @@
 import { parseWithZod } from "@conform-to/zod";
-import { invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon, TrashIcon } from "@radix-ui/react-icons";
 import { data, Form, Link, redirect, useNavigation } from "react-router";
 import { NoteForm, NoteFormSchema } from "~/components/note-form";
@@ -20,9 +19,11 @@ export async function loader({ params }: Route.LoaderArgs) {
     select: { text: true, date: true },
     where: { id: params.noteId },
   });
-  invariantResponse(note, `No note with the id "${params.noteId}" exists.`, {
-    status: 404,
-  });
+  if (!note) {
+    throw data(`No note with the id "${params.noteId}" exists.`, {
+      status: 404,
+    });
+  }
 
   return { note };
 }
@@ -34,42 +35,51 @@ export async function action({ request, params }: Route.ActionArgs) {
     select: { id: true },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   const note = await db.note.findUnique({
     select: { id: true },
     where: { id: params.noteId },
   });
-  invariantResponse(note, `No note with the id "${params.noteId}" exists.`, {
-    status: 404,
-  });
+  if (!note) {
+    throw data(`No note with the id "${params.noteId}" exists.`, {
+      status: 404,
+    });
+  }
 
   const formData = await request.formData();
 
-  if (formData.get("intent") === "deleteNote") {
-    await db.note.delete({
-      select: { id: true },
-      where: { id: params.noteId },
-    });
-  } else {
-    const submission = parseWithZod(formData, { schema: NoteFormSchema });
-    if (submission.status !== "success") {
-      return data(
-        { result: submission.reply() },
-        { status: submission.status === "error" ? 400 : 200 },
-      );
-    }
+  switch (formData.get("intent")) {
+    case "editNote": {
+      const submission = parseWithZod(formData, { schema: NoteFormSchema });
+      if (submission.status !== "success") {
+        return data(
+          { result: submission.reply() },
+          { status: submission.status === "error" ? 400 : 200 },
+        );
+      }
 
-    const updates = submission.value;
-    await db.note.update({
-      select: { id: true },
-      data: updates,
-      where: { id: params.noteId },
-    });
+      const updates = submission.value;
+      await db.note.update({
+        select: { id: true },
+        data: updates,
+        where: { id: params.noteId },
+      });
+
+      break;
+    }
+    case "deleteNote": {
+      await db.note.delete({
+        select: { id: true },
+        where: { id: params.noteId },
+      });
+
+      break;
+    }
   }
 
   throw redirect(`/contacts/${params.contactId}/notes`);

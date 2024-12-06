@@ -1,7 +1,6 @@
-import { invariantResponse } from "@epic-web/invariant";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { format, formatDistanceStrict } from "date-fns";
-import { Form, Link } from "react-router";
+import { data, Form, Link } from "react-router";
 import { EmptyState } from "~/components/empty-state";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -26,11 +25,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   return { contact };
 }

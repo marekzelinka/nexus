@@ -8,6 +8,7 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import {
+  data,
   Form,
   Link,
   NavLink,
@@ -67,39 +68,40 @@ export async function action({ request, params }: Route.ActionArgs) {
     select: { id: true },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   const formData = await request.formData();
 
-  if (formData.get("intent") === "favorite") {
-    const favorite = formData.get("favorite");
+  switch (formData.get("intent")) {
+    case "favoriteContact": {
+      const favorite = formData.get("favorite");
 
-    await db.contact.update({
-      select: { id: true },
-      data: { favorite: favorite === "true" },
-      where: { id: params.contactId, userId },
-    });
+      await db.contact.update({
+        select: { id: true },
+        data: { favorite: favorite === "true" },
+        where: { id: params.contactId, userId },
+      });
 
-    return { ok: true };
+      return { ok: true };
+    }
+    case "deleteContact": {
+      await db.contact.delete({
+        select: { id: true },
+        where: { id: params.contactId, userId },
+      });
+
+      return redirect("/contacts");
+    }
+    default: {
+      throw data(`Invalid intent: ${formData.get("intent") ?? "Missing"}`, {
+        status: 400,
+      });
+    }
   }
-
-  if (formData.get("intent") === "delete") {
-    await db.contact.delete({
-      select: { id: true },
-      where: { id: params.contactId, userId },
-    });
-
-    return redirect("/contacts");
-  }
-
-  invariantResponse(
-    false,
-    `Invalid intent: ${formData.get("intent") ?? "Missing"}`,
-  );
 }
 
 export function ErrorBoundary() {
@@ -186,7 +188,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 }
               }}
             >
-              <input type="hidden" name="intent" value="delete" />
+              <input type="hidden" name="intent" value="deleteContact" />
               <Button type="submit" size="sm" variant="outline">
                 <TrashIcon className="mr-2" aria-hidden />
                 Delete
@@ -236,7 +238,7 @@ function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
 
   return (
     <fetcher.Form method="POST">
-      <input type="hidden" name="intent" value="favorite" />
+      <input type="hidden" name="intent" value="favoriteContact" />
       <input
         type="hidden"
         name="favorite"

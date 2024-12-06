@@ -21,6 +21,7 @@ import {
 } from "react-router";
 import sortBy from "sort-by";
 import { useSpinDelay } from "spin-delay";
+import { LoadingOverlay } from "~/components/loading-overlay";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -70,9 +71,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <main className="h-full pl-96">
-        <ContactLoadingOverlay>
+        <LoadingOverlay>
           <Outlet />
-        </ContactLoadingOverlay>
+        </LoadingOverlay>
       </main>
       <aside className="fixed inset-y-0 flex w-96 flex-col border-r bg-background">
         <div className="flex gap-4 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -151,23 +152,6 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         </ScrollArea>
       </aside>
     </>
-  );
-}
-
-function ContactLoadingOverlay({ children }: PropsWithChildren) {
-  const navigation = useNavigation();
-  const isLoading = navigation.state === "loading";
-  const isSearching = new URLSearchParams(navigation.location?.search).has("q");
-  const shouldShowOverlay = useSpinDelay(isLoading && !isSearching);
-
-  return (
-    <div
-      className={
-        shouldShowOverlay ? "opacity-50 transition-opacity" : undefined
-      }
-    >
-      {children}
-    </div>
   );
 }
 

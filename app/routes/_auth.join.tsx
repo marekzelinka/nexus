@@ -3,6 +3,7 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { data, Form, Link, useSearchParams } from "react-router";
 import { z } from "zod";
 import { ErrorList } from "~/components/forms";
+import { Logo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -128,95 +129,98 @@ export default function Component({ actionData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle asChild className="text-2xl">
-          <h1>Sign Up</h1>
-        </CardTitle>
-        <CardDescription>
-          Enter your information to create an account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form method="post" {...getFormProps(form)}>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor={fields.username.id}>Username</Label>
-              <Input
-                autoComplete="username"
-                placeholder="m_robinson"
-                {...getInputProps(fields.username, { type: "text" })}
-              />
-              <ErrorList
-                id={fields.username.errorId}
-                errors={fields.username.errors}
-              />
-            </div>
-            <div className="grid grid-cols-2 items-start gap-4">
+    <div className="mx-auto w-full max-w-[400px]">
+      <Logo className="mx-auto h-11 w-auto" />
+      <Card className="mt-10">
+        <CardHeader className="items-center">
+          <CardTitle asChild className="text-2xl">
+            <h1>Sign Up</h1>
+          </CardTitle>
+          <CardDescription>
+            Enter your information to create an account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form method="post" {...getFormProps(form)}>
+            <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor={fields.first.id}>First name</Label>
+                <Label htmlFor={fields.username.id}>Username</Label>
                 <Input
-                  autoComplete="given-name"
-                  placeholder="Max"
-                  {...getInputProps(fields.first, { type: "text" })}
+                  autoComplete="username"
+                  placeholder="m_robinson"
+                  {...getInputProps(fields.username, { type: "text" })}
                 />
                 <ErrorList
-                  id={fields.first.errorId}
-                  errors={fields.first.errors}
+                  id={fields.username.errorId}
+                  errors={fields.username.errors}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-start gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor={fields.first.id}>First name</Label>
+                  <Input
+                    autoComplete="given-name"
+                    placeholder="Max"
+                    {...getInputProps(fields.first, { type: "text" })}
+                  />
+                  <ErrorList
+                    id={fields.first.errorId}
+                    errors={fields.first.errors}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={fields.last.id}>Last name</Label>
+                  <Input
+                    autoComplete="family-name"
+                    placeholder="Robinson"
+                    {...getInputProps(fields.last, { type: "text" })}
+                  />
+                  <ErrorList
+                    id={fields.last.errorId}
+                    errors={fields.last.errors}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor={fields.email.id}>Email</Label>
+                <Input
+                  autoComplete="email"
+                  placeholder="m@example.com"
+                  {...getInputProps(fields.email, { type: "email" })}
+                />
+                <ErrorList
+                  id={fields.email.errorId}
+                  errors={fields.email.errors}
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor={fields.last.id}>Last name</Label>
+                <Label htmlFor={fields.password.id}>Password</Label>
                 <Input
-                  autoComplete="family-name"
-                  placeholder="Robinson"
-                  {...getInputProps(fields.last, { type: "text" })}
+                  autoComplete="new-password"
+                  {...getInputProps(fields.password, { type: "password" })}
                 />
                 <ErrorList
-                  id={fields.last.errorId}
-                  errors={fields.last.errors}
+                  id={fields.password.errorId}
+                  errors={fields.password.errors}
                 />
               </div>
+              <ErrorList id={form.errorId} errors={form.errors} />
+              <Button type="submit" className="w-full">
+                Create an account
+              </Button>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor={fields.email.id}>Email</Label>
-              <Input
-                autoComplete="email"
-                placeholder="m@example.com"
-                {...getInputProps(fields.email, { type: "email" })}
-              />
-              <ErrorList
-                id={fields.email.errorId}
-                errors={fields.email.errors}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor={fields.password.id}>Password</Label>
-              <Input
-                autoComplete="new-password"
-                {...getInputProps(fields.password, { type: "password" })}
-              />
-              <ErrorList
-                id={fields.password.errorId}
-                errors={fields.password.errors}
-              />
-            </div>
-            <ErrorList id={form.errorId} errors={form.errors} />
-            <Button type="submit" className="w-full">
-              Create an account
-            </Button>
-          </div>
-        </Form>
-        <p className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link
-            to={{ pathname: "/login", search: searchParams.toString() }}
-            className="underline"
-          >
-            Sign in
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+          </Form>
+          <p className="mt-4 text-center text-sm">
+            Already have an account?{" "}
+            <Link
+              to={{ pathname: "/login", search: searchParams.toString() }}
+              className="underline"
+            >
+              Sign in
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

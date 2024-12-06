@@ -14,8 +14,8 @@ export default function Component() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
       <div className="mx-auto w-full max-w-xl">
-        <Logo className="mx-auto h-9 w-auto" />
-        <div className="mt-6 text-center">
+        <Logo className="mx-auto h-11 w-auto" />
+        <div className="mt-10 text-center">
           <h1 className="text-balance text-4xl font-bold leading-[1.1] tracking-tighter">
             Supercharge your relationships
           </h1>
