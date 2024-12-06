@@ -5,7 +5,7 @@ import {
   useForm,
 } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { invariant, invariantResponse } from "@epic-web/invariant";
+import { invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { data, Form, Link, redirect, useNavigate } from "react-router";
@@ -105,7 +105,6 @@ export const meta = ({ error }: Route.MetaArgs) => {
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: {
       id: true,
@@ -136,7 +135,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },

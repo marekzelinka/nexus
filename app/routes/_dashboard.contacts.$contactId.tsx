@@ -1,4 +1,4 @@
-import { invariant, invariantResponse } from "@epic-web/invariant";
+import { invariantResponse } from "@epic-web/invariant";
 import type { Contact } from "@prisma/client";
 import {
   ChevronLeftIcon,
@@ -47,7 +47,6 @@ export const meta: Route.MetaFunction = ({ data, error }) => {
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true, first: true, last: true, avatar: true, favorite: true },
     where: { id: params.contactId, userId },
@@ -64,7 +63,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },

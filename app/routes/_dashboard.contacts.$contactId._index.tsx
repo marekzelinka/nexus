@@ -1,4 +1,4 @@
-import { invariant, invariantResponse } from "@epic-web/invariant";
+import { invariantResponse } from "@epic-web/invariant";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { format, formatDistanceStrict } from "date-fns";
 import { Form, Link } from "react-router";
@@ -12,7 +12,6 @@ import type { Route } from "./+types/_dashboard.contacts.$contactId._index";
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: {
       bio: true,

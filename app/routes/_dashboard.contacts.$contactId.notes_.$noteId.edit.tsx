@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { invariant, invariantResponse } from "@epic-web/invariant";
+import { invariantResponse } from "@epic-web/invariant";
 import { ChevronLeftIcon, TrashIcon } from "@radix-ui/react-icons";
 import { data, Form, Link, redirect, useNavigation } from "react-router";
 import { NoteForm, NoteFormSchema } from "~/components/note-form";
@@ -16,7 +16,6 @@ import { db } from "~/utils/db.server";
 import type { Route } from "./+types/_dashboard.contacts.$contactId.notes_.$noteId.edit";
 
 export async function loader({ params }: Route.LoaderArgs) {
-  invariant(params.noteId, "Missing noteId param");
   const note = await db.note.findUnique({
     select: { text: true, date: true },
     where: { id: params.noteId },
@@ -31,7 +30,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
@@ -42,7 +40,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     { status: 404 },
   );
 
-  invariant(params.noteId, "Missing noteId param");
   const note = await db.note.findUnique({
     select: { id: true },
     where: { id: params.noteId },

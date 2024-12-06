@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { invariant, invariantResponse } from "@epic-web/invariant";
+import { invariantResponse } from "@epic-web/invariant";
 import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { compareAsc, format, isToday, isYesterday } from "date-fns";
 import { useState } from "react";
@@ -24,7 +24,6 @@ type LoaderData = Route.ComponentProps["loaderData"];
 type Note = LoaderData["notes"][number];
 
 export async function loader({ params }: Route.LoaderArgs) {
-  invariant(params.contactId, "Missing contactId param");
   const notes = await db.note.findMany({
     select: { id: true, text: true, date: true, createdAt: true },
     where: { contactId: params.contactId },
@@ -36,7 +35,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireUserId(request);
 
-  invariant(params.contactId, "Missing contactId param");
   const contact = await db.contact.findUnique({
     select: { id: true },
     where: { id: params.contactId, userId },
