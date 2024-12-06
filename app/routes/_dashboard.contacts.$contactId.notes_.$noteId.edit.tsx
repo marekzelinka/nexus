@@ -128,7 +128,7 @@ export default function Component({
       >
         <input type="hidden" name="intent" value="deleteNote" />
         <Button size="sm" variant="destructive" disabled={isDeleting}>
-          <TrashIcon className="mr-2" aria-hidden />
+          <TrashIcon aria-hidden />
           {isDeleting ? "Deleting…" : "Delete this note…"}
         </Button>
       </Form>

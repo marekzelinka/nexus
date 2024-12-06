@@ -82,7 +82,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           </search>
           <Form method="POST">
             <Button type="submit" aria-label="New contact">
-              <PlusIcon className="mr-2" aria-hidden />
+              <PlusIcon aria-hidden />
               New
             </Button>
           </Form>

@@ -87,7 +87,7 @@ export const BreadcrumbSeparator = ({
     aria-hidden
     {...props}
   >
-    {children ?? <ChevronRightIcon />}
+    {children ?? <ChevronRightIcon aria-hidden />}
   </li>
 );
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
@@ -105,7 +105,7 @@ export const BreadcrumbEllipsis = ({
     )}
     {...props}
   >
-    <DotsHorizontalIcon />
+    <DotsHorizontalIcon aria-hidden />
     <span className="sr-only">More</span>
   </span>
 );

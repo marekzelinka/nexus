@@ -37,10 +37,10 @@ function LogoutForm() {
             type="submit"
             size="icon"
             variant="ghost"
-            className="text-muted-foreground hover:bg-background hover:text-foreground"
+            className="text-muted-foreground hover:bg-background hover:text-foreground [&_svg]:size-5"
             aria-label={label}
           >
-            <ExitIcon className="size-5" aria-hidden />
+            <ExitIcon aria-hidden />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="right">{label}</TooltipContent>

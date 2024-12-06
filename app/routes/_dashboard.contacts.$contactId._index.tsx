@@ -52,7 +52,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           >
             <Form action="edit">
               <Button type="submit" size="sm">
-                <Pencil1Icon className="mr-2" aria-hidden />
+                <Pencil1Icon aria-hidden />
                 Edit details
               </Button>
             </Form>

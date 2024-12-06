@@ -40,7 +40,7 @@ export const DropdownMenuSubTrigger = forwardRef<
     {...props}
   >
     {children}
-    <ChevronRightIcon className="ml-auto" />
+    <ChevronRightIcon className="ml-auto" aria-hidden />
   </DropdownMenuPrimitive.SubTrigger>
 ));
 DropdownMenuSubTrigger.displayName =
@@ -114,7 +114,7 @@ export const DropdownMenuCheckboxItem = forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator className="[&>svg]:size-4">
-        <CheckIcon />
+        <CheckIcon aria-hidden />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -137,7 +137,7 @@ export const DropdownMenuRadioItem = forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator className="[&>svg]:size-2">
-        <DotFilledIcon className="fill-current" />
+        <DotFilledIcon className="fill-current" aria-hidden />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}

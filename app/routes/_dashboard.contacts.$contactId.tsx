@@ -173,7 +173,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           <div className="ml-6 flex gap-4 pb-1">
             <Form action="edit">
               <Button type="submit" size="sm" variant="outline">
-                <Pencil1Icon className="mr-2" aria-hidden />
+                <Pencil1Icon aria-hidden />
                 Edit
               </Button>
             </Form>
@@ -190,7 +190,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             >
               <input type="hidden" name="intent" value="deleteContact" />
               <Button type="submit" size="sm" variant="outline">
-                <TrashIcon className="mr-2" aria-hidden />
+                <TrashIcon aria-hidden />
                 Delete
               </Button>
             </Form>
