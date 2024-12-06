@@ -6,7 +6,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
-import { cx } from "~/utils/misc";
+import { cx } from "~/lib/utils";
 
 export const Breadcrumb = forwardRef<
   HTMLElement,

@@ -2,7 +2,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { TooltipProvider } from "./components/ui/tooltip";
-import { getUser } from "./utils/auth.server";
+import { getUser } from "./lib/auth.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },

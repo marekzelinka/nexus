@@ -22,8 +22,8 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
-import { requireUserId } from "~/utils/auth.server";
-import { db } from "~/utils/db.server";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
 import type { Route } from "./+types/_dashboard.contacts.$contactId_.edit";
 
 const EditContactSchema = z.object({

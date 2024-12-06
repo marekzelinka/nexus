@@ -4,7 +4,7 @@ import {
   type ComponentPropsWithoutRef,
   type ElementRef,
 } from "react";
-import { cva, cx, type VariantProps } from "~/utils/misc";
+import { cva, cx, type VariantProps } from "~/lib/utils";
 
 export const labelVariants = cva({
   base: "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",

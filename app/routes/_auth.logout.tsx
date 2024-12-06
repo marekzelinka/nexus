@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { logout } from "~/utils/auth.server";
+import { logout } from "~/lib/auth.server";
 import type { Route } from "./+types/_auth.logout";
 
 export async function loader() {

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Logo } from "~/components/logo";
 import { buttonVariants } from "~/components/ui/button";
-import { useOptionalUser } from "~/utils/user";
+import { useOptionalUser } from "~/lib/user";
 import type { Route } from "./+types/_index";
 
 export const meta: Route.MetaFunction = () => {

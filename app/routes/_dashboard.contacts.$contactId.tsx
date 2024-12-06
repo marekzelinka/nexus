@@ -28,9 +28,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { Toggle } from "~/components/ui/toggle";
-import { requireUserId } from "~/utils/auth.server";
-import { db } from "~/utils/db.server";
-import { cx } from "~/utils/misc";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { cx } from "~/lib/utils";
 import type { Route } from "./+types/_dashboard.contacts.$contactId";
 
 export const meta: Route.MetaFunction = ({ data, error }) => {

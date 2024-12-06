@@ -14,8 +14,8 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createUserSession, verifyLogin } from "~/utils/auth.server";
-import { composeSafeRedirectUrl } from "~/utils/misc";
+import { createUserSession, verifyLogin } from "~/lib/auth.server";
+import { composeSafeRedirectUrl } from "~/lib/utils";
 import type { Route } from "./+types/_auth.login";
 
 const LoginSchema = z.object({

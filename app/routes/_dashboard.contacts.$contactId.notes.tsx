@@ -14,9 +14,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { requireUserId } from "~/utils/auth.server";
-import { db } from "~/utils/db.server";
-import { useClipboard } from "~/utils/misc";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { useClipboard } from "~/lib/utils";
 import type { Route } from "./+types/_dashboard.contacts.$contactId.notes";
 
 type LoaderData = Route.ComponentProps["loaderData"];

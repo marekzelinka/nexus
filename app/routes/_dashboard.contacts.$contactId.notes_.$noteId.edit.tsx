@@ -10,8 +10,8 @@ import {
 } from "~/components/ui/breadcrumb";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { requireUserId } from "~/utils/auth.server";
-import { db } from "~/utils/db.server";
+import { requireUserId } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
 import type { Route } from "./+types/_dashboard.contacts.$contactId.notes_.$noteId.edit";
 
 export async function loader({ params }: Route.LoaderArgs) {

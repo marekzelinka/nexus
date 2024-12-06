@@ -14,9 +14,9 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createUser, createUserSession } from "~/utils/auth.server";
-import { db } from "~/utils/db.server";
-import { composeSafeRedirectUrl } from "~/utils/misc";
+import { createUser, createUserSession } from "~/lib/auth.server";
+import { db } from "~/lib/db.server";
+import { composeSafeRedirectUrl } from "~/lib/utils";
 import type { Route } from "./+types/_auth.join";
 
 const CreateAccountSchema = z.object({
