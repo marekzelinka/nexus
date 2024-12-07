@@ -12,7 +12,7 @@ export default function Component() {
   const user = useOptionalUser();
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
+    <div className="flex h-screen w-full items-center justify-center px-4">
       <div className="mx-auto w-full max-w-xl">
         <Logo className="mx-auto h-11 w-auto" />
         <div className="mt-10 text-center">

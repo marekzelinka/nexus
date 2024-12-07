@@ -1,50 +1,106 @@
-import { ExitIcon } from "@radix-ui/react-icons";
-import { Form, Outlet } from "react-router";
+import { AvatarIcon, ExitIcon } from "@radix-ui/react-icons";
+import type { CSSProperties } from "react";
+import { Outlet, useSubmit } from "react-router";
 import { Logo } from "~/components/logo";
-import { Button } from "~/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "~/components/ui/sidebar";
+import { useUser } from "~/lib/user";
 
 export default function Component() {
   return (
-    <>
-      <nav className="fixed inset-y-0 left-0 z-10 flex w-14 flex-col border-r bg-background">
-        <div className="flex flex-col items-center gap-4 px-2 py-4">
-          <Logo className="h-9 w-auto flex-none" />
-        </div>
-        <div className="mt-auto flex flex-col items-center gap-4 px-2 py-4">
-          <LogoutForm />
-        </div>
-      </nav>
-      <div className="isolate h-full pl-14">
-        <Outlet />
-      </div>
-    </>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "350px",
+        } as CSSProperties
+      }
+    >
+      <AppSidebar />
+      <Outlet />
+    </SidebarProvider>
   );
 }
 
-function LogoutForm() {
-  const label = "Sign out";
+function AppSidebar() {
+  return (
+    <Sidebar
+      collapsible="none"
+      className="h-auto w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
+    >
+      <SidebarHeader className="pt-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Logo className="size-8" />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent></SidebarContent>
+      <SidebarFooter className="pb-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <UserDropdown />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+function UserDropdown() {
+  const user = useUser();
+
+  const submit = useSubmit();
+
+  const logout = () => {
+    submit(null, {
+      method: "POST",
+      action: "/logout",
+      navigate: true,
+      flushSync: true,
+    });
+  };
 
   return (
-    <Form method="post" action="/logout">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="submit"
-            size="icon"
-            variant="ghost"
-            className="text-muted-foreground hover:bg-background hover:text-foreground [&_svg]:size-5"
-            aria-label={label}
-          >
-            <ExitIcon aria-hidden />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
-      </Tooltip>
-    </Form>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton className="justify-center [&>svg]:size-6">
+          <AvatarIcon aria-hidden />
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        side="right"
+        align="end"
+        sideOffset={4}
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="px-1 py-1.5 text-sm leading-tight">
+            <span className="block truncate font-semibold">{`${user.first} ${user.last}`}</span>
+            <span className="block truncate text-xs">{user.email}</span>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout}>
+          <ExitIcon aria-hidden />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

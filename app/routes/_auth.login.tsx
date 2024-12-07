@@ -79,11 +79,8 @@ export default function Component({ actionData }: Route.ComponentProps) {
   const [form, fields] = useForm({
     constraint: getZodConstraint(LoginSchema),
     lastResult: actionData?.result,
-    shouldValidate: "onBlur",
-    shouldRevalidate: "onInput",
-    onValidate: ({ formData }) => {
-      return parseWithZod(formData, { schema: LoginSchema });
-    },
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, { schema: LoginSchema }),
   });
 
   const [searchParams] = useSearchParams();

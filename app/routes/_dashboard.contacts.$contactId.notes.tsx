@@ -1,8 +1,13 @@
 import { parseWithZod } from "@conform-to/zod";
-import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
-import { compareAsc, format, isToday, isYesterday } from "date-fns";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  DotsHorizontalIcon,
+  UpdateIcon,
+} from "@radix-ui/react-icons";
+import { compareDesc, format, isToday, isYesterday } from "date-fns";
 import { useState } from "react";
-import { data, Link, useFetchers, useLoaderData } from "react-router";
+import { data, Link, useFetchers } from "react-router";
 import { useSpinDelay } from "spin-delay";
 import { EmptyState } from "~/components/empty-state";
 import { NoteForm, NoteFormSchema } from "~/components/note-form";
@@ -26,6 +31,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const notes = await db.note.findMany({
     select: { id: true, text: true, date: true, createdAt: true },
     where: { contactId: params.contactId },
+    orderBy: [{ date: "desc" }, { createdAt: "desc" }],
   });
 
   return { notes };
@@ -64,18 +70,27 @@ export async function action({ request, params }: Route.ActionArgs) {
   return { result: submission.reply({ resetForm: true }) };
 }
 
-export default function Component({ actionData }: Route.ComponentProps) {
+export default function Component({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
+  const { notes } = loaderData;
+
   return (
-    <Card>
-      <CardHeader className="flex-row items-center justify-between">
-        <CardTitle>Notes</CardTitle>
-        <NoteSavingIndicator />
-      </CardHeader>
-      <CardContent className="grid gap-8">
-        <NoteForm lastResult={actionData?.result} />
-        <NoteList />
-      </CardContent>
-    </Card>
+    <>
+      <NoteForm lastResult={actionData?.result} />
+      <Card className="mt-6">
+        <CardHeader className="flex-row items-center justify-between">
+          <CardTitle>
+            <h2>Notes</h2>
+          </CardTitle>
+          <NoteSavingIndicator />
+        </CardHeader>
+        <CardContent>
+          <NoteList notes={notes} />
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
@@ -92,13 +107,10 @@ function NoteSavingIndicator() {
   );
 }
 
-function NoteList() {
-  const loaderData = useLoaderData<typeof loader>();
-  const { notes } = loaderData;
-
-  const optimisticNotes = useOptimisticNotes();
+function NoteList({ notes }: { notes: Note[] }) {
   const notesById = new Map(notes.map((note) => [note.id, note]));
 
+  const optimisticNotes = useOptimisticNotes();
   // Merge optimistic and existing entries
   for (const optimisticNote of optimisticNotes) {
     const note = notesById.get(optimisticNote.id);
@@ -108,11 +120,11 @@ function NoteList() {
 
   const notesToShow = [...notesById.values()].sort(
     (a, b) =>
-      compareAsc(b.date, a.date) || compareAsc(b.createdAt, a.createdAt),
+      compareDesc(a.date, b.date) || compareDesc(a.createdAt, b.createdAt),
   );
 
   return notesToShow.length ? (
-    <ul className="grid gap-8">
+    <ul className="grid gap-4">
       {notesToShow.map((note) => (
         <NoteItem key={note.id} note={note} />
       ))}
@@ -155,15 +167,15 @@ function useOptimisticNotes() {
 function NoteItem({ note }: { note: Note }) {
   return (
     <li key={note.id} className="flex items-start gap-6">
-      <div className="flex-auto py-1">
+      <div className="flex-1 py-1">
         <NoteText note={note} />
       </div>
       <div className="flex flex-none items-center gap-2">
         <p className="text-sm text-muted-foreground">
           {isToday(note.date)
-            ? "Today"
+            ? "today"
             : isYesterday(note.date)
-              ? "Yesterday"
+              ? "yesterday"
               : format(note.date, "PP")}
         </p>
         <DropdownMenu>
@@ -180,7 +192,9 @@ function NoteItem({ note }: { note: Note }) {
           <DropdownMenuContent align="end">
             <CopyNoteAction note={note} />
             <DropdownMenuItem asChild>
-              <Link to={`${note.id}/edit`}>Edit</Link>
+              <Link to={`${note.id}/edit`} prefetch="intent">
+                Edit
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -204,11 +218,21 @@ function NoteText({ note }: { note: Pick<Note, "text"> }) {
       <p className="text-sm">{text}</p>
       {shouldClamp ? (
         <Button
-          variant="secondary"
           size="sm"
+          variant="secondary"
           onClick={() => setIsClamped((isClamped) => !isClamped)}
         >
-          {isClamped ? "Show more" : "Show less"}
+          {isClamped ? (
+            <>
+              <ChevronDownIcon aria-hidden />
+              Show more
+            </>
+          ) : (
+            <>
+              <ChevronUpIcon aria-hidden />
+              Show less
+            </>
+          )}
         </Button>
       ) : null}
     </div>

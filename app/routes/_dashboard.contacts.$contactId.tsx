@@ -1,7 +1,5 @@
-import { invariantResponse } from "@epic-web/invariant";
 import type { Contact } from "@prisma/client";
 import {
-  ChevronLeftIcon,
   Pencil1Icon,
   StarFilledIcon,
   StarIcon,
@@ -10,23 +8,15 @@ import {
 import {
   data,
   Form,
-  Link,
   NavLink,
   Outlet,
   redirect,
   useFetcher,
   type NavLinkProps,
 } from "react-router";
-import { GeneralErrorBoundary } from "~/components/error-boundary";
+import { GenericErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-} from "~/components/ui/breadcrumb";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
 import { Toggle } from "~/components/ui/toggle";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
@@ -52,11 +42,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     select: { id: true, first: true, last: true, avatar: true, favorite: true },
     where: { id: params.contactId, userId },
   });
-  invariantResponse(
-    contact,
-    `No contact with the id "${params.contactId}" exists.`,
-    { status: 404 },
-  );
+  if (!contact) {
+    throw data(`No contact with the id "${params.contactId}" exists.`, {
+      status: 404,
+    });
+  }
 
   return { contact };
 }
@@ -106,8 +96,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export function ErrorBoundary() {
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <GeneralErrorBoundary />
+    <div className="mx-auto max-w-3xl">
+      <GenericErrorBoundary />
     </div>
   );
 }
@@ -122,41 +112,25 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <Breadcrumb className="bg-background">
-        <div className="mx-auto flex h-10 max-w-3xl items-center px-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to=".." className="inline-flex items-center gap-1.5">
-                  <ChevronLeftIcon aria-hidden />
-                  <span className="text-foreground">Contacts</span>
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </div>
-      </Breadcrumb>
-      <Separator />
-      <div className="mx-auto max-w-3xl p-6">
+      <div className="mx-auto max-w-3xl">
         <div className="flex items-end">
-          <div className="flex flex-none">
-            <Avatar key={contact.avatar} className="size-32">
-              <AvatarImage src={contact.avatar ?? undefined} alt="" />
-              <AvatarFallback className="bg-background">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-full w-full fill-muted"
-                  aria-hidden
-                >
-                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="ml-5 flex w-full min-w-0 items-center gap-3 pb-1">
+          <Avatar key={contact.avatar} className="size-32 flex-none">
+            <AvatarImage src={contact.avatar ?? undefined} alt="" />
+            <AvatarFallback className="">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-muted-foreground"
+                aria-hidden
+              >
+                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </AvatarFallback>
+          </Avatar>
+          <div className="ml-5 flex w-full min-w-0 items-center gap-4 pb-1">
             <h1
               className={cx(
-                "text-2xl font-semibold tracking-tight",
+                "truncate text-2xl font-semibold tracking-tight",
                 contact.first || contact.last ? "" : "text-muted-foreground",
               )}
             >
@@ -170,7 +144,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
             </h1>
             <Favorite contact={contact} />
           </div>
-          <div className="ml-6 flex gap-4 pb-1">
+          <div className="ml-6 flex gap-2 pb-1">
             <Form action="edit">
               <Button type="submit" size="sm" variant="outline">
                 <Pencil1Icon aria-hidden />
@@ -188,15 +162,22 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 }
               }}
             >
-              <input type="hidden" name="intent" value="deleteContact" />
-              <Button type="submit" size="sm" variant="outline">
+              <Button
+                type="submit"
+                name="intent"
+                value="deleteContact"
+                size="sm"
+                variant="outline"
+              >
                 <TrashIcon aria-hidden />
                 Delete
               </Button>
             </Form>
           </div>
         </div>
-        <div className="mt-6">
+      </div>
+      <div className="mt-6">
+        <div className="mx-auto max-w-3xl">
           <nav
             className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1"
             aria-label="Tabs"
@@ -211,9 +192,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 className={({ isActive }) =>
                   cx(
                     "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-                    isActive
-                      ? "bg-background text-foreground shadow"
-                      : "text-muted-foreground",
+                    isActive ? "bg-background shadow" : "text-muted-foreground",
                   )
                 }
               >
@@ -221,9 +200,11 @@ export default function Component({ loaderData }: Route.ComponentProps) {
               </NavLink>
             ))}
           </nav>
-          <div className="mt-2">
-            <Outlet />
-          </div>
+        </div>
+      </div>
+      <div className="mt-2">
+        <div className="mx-auto max-w-3xl">
+          <Outlet />
         </div>
       </div>
     </>
@@ -238,7 +219,6 @@ function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
 
   return (
     <fetcher.Form method="POST">
-      <input type="hidden" name="intent" value="favoriteContact" />
       <input
         type="hidden"
         name="favorite"
@@ -246,7 +226,10 @@ function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
       />
       <Toggle
         type="submit"
+        name="intent"
+        value="favoriteContact"
         size="sm"
+        variant="outline"
         pressed={favorite}
         aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
       >

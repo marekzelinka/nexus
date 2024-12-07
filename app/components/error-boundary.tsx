@@ -1,24 +1,31 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { isRouteErrorResponse, useRouteError } from "react-router";
+import { isRouteErrorResponse, Link, useRouteError } from "react-router";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Button } from "./ui/button";
 
-export function GeneralErrorBoundary() {
+export function GenericErrorBoundary() {
   const error = useRouteError();
   const errorMessage = isRouteErrorResponse(error)
     ? error.data
     : getErrorMessage(error);
 
   return (
-    <div className="flex flex-col items-center gap-1 text-center">
-      <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-destructive [&_svg]:size-5">
-        <ExclamationTriangleIcon
-          className="text-destructive-foreground"
-          aria-hidden
-        />
+    <div className="mx-auto max-w-lg">
+      <div className="space-y-6">
+        <Alert variant="destructive" className="[&_svg]:size-4">
+          <ExclamationTriangleIcon />
+          <AlertTitle>Oops! Something went wrong!</AlertTitle>
+          <AlertDescription>
+            {errorMessage ??
+              "We're sorry, but we encountered an unexpected error."}
+          </AlertDescription>
+        </Alert>
+        <div className="space-y-4">
+          <Button asChild variant="outline" className="w-full">
+            <Link to="/">Return to Homepage</Link>
+          </Button>
+        </div>
       </div>
-      <h3 className="mt-4 text-2xl font-bold tracking-tight">
-        Oops! An error occurred…
-      </h3>
-      <p className="mt-2 text-sm text-muted-foreground">{errorMessage}</p>
     </div>
   );
 }
@@ -39,5 +46,5 @@ function getErrorMessage(error: unknown) {
 
   console.error("Unable to get error message for error", error);
 
-  return "Unknown Error";
+  return null;
 }

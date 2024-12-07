@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 
 export default function Component() {
   return (
-    <div className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto max-w-3xl">
       <EmptyState
         title="No contact selected"
         description="Select a contact on the left, or create a new contact."

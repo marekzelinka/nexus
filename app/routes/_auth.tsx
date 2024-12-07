@@ -13,7 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Component() {
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12">
+    <div className="flex h-screen w-full items-center justify-center px-4">
       <Outlet />
     </div>
   );

@@ -95,7 +95,7 @@ export default function Component({
   const isDeleting = navigation.formData?.get("intent") === "deleteNote";
 
   return (
-    <div className="grid gap-2">
+    <>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -108,11 +108,11 @@ export default function Component({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <Card>
+      <Card className="mt-2">
         <CardHeader>
           <CardTitle>Edit Note</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-8">
+        <CardContent>
           <NoteForm lastResult={actionData?.result} note={note} />
         </CardContent>
       </Card>
@@ -124,14 +124,20 @@ export default function Component({
             event.preventDefault();
           }
         }}
-        className="mt-4"
+        className="mt-6"
       >
-        <input type="hidden" name="intent" value="deleteNote" />
-        <Button size="sm" variant="destructive" disabled={isDeleting}>
+        <Button
+          type="submit"
+          name="intent"
+          value="deleteNote"
+          size="sm"
+          variant="destructive"
+          disabled={isDeleting}
+        >
           <TrashIcon aria-hidden />
           {isDeleting ? "Deleting…" : "Delete this note…"}
         </Button>
       </Form>
-    </div>
+    </>
   );
 }

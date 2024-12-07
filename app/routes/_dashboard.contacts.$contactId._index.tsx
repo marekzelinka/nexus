@@ -42,7 +42,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
+        <CardTitle asChild>
+          <h2>Profile</h2>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {isEmpty ? (

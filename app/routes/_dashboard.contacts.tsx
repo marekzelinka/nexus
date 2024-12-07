@@ -23,8 +23,15 @@ import sortBy from "sort-by";
 import { useSpinDelay } from "spin-delay";
 import { LoadingOverlay } from "~/components/loading-overlay";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { ScrollArea } from "~/components/ui/scroll-area";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+} from "~/components/ui/sidebar";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
 import { cx } from "~/lib/utils";
@@ -70,87 +77,77 @@ export default function Component({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <main className="h-full pl-96">
-        <LoadingOverlay>
-          <Outlet />
-        </LoadingOverlay>
-      </main>
-      <aside className="fixed inset-y-0 flex w-96 flex-col border-r bg-background">
-        <div className="flex gap-4 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <search role="search" className="flex-1">
-            <SearchBar />
-          </search>
-          <Form method="POST">
-            <Button type="submit" aria-label="New contact">
-              <PlusIcon aria-hidden />
-              New
-            </Button>
-          </Form>
-        </div>
-        <ScrollArea className="flex-1">
-          {contacts.length ? (
-            <div className="p-4 pt-0">
-              {contacts.map((contact) => (
-                <NavLink
-                  key={contact.id}
-                  to={contact.id}
-                  prefetch="intent"
-                  className={({ isActive, isPending }) =>
-                    cx(
-                      "group flex items-center gap-2 rounded-md p-2 text-sm transition-colors",
-                      isActive
-                        ? "bg-primary"
-                        : isPending
-                          ? "bg-muted"
-                          : "hover:bg-muted",
-                      isActive
-                        ? contact.first || contact.last
-                          ? "text-primary-foreground"
-                          : "text-primary-foreground/70"
-                        : isPending
-                          ? "text-primary"
-                          : contact.first || contact.last
-                            ? ""
-                            : "text-muted-foreground",
-                    )
-                  }
-                >
-                  {({ isActive, isPending }) => (
-                    <>
-                      <span className="flex-auto truncate">
-                        {contact.first || contact.last ? (
-                          <>
-                            {contact.first} {contact.last}
-                          </>
-                        ) : (
-                          "No Name"
-                        )}
-                      </span>
+      <Sidebar collapsible="none" className="flex h-auto border-r">
+        <SidebarHeader className="gap-3.5 border-b p-4">
+          <div className="flex gap-2">
+            <search role="search" className="flex-1">
+              <SearchBar />
+            </search>
+            <Form method="POST">
+              <Button type="submit" size="sm" aria-label="New contact">
+                <PlusIcon aria-hidden />
+                New
+              </Button>
+            </Form>
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup className="px-0">
+            <SidebarGroupContent className="divide-y">
+              {contacts.length ? (
+                contacts.map((contact) => (
+                  <NavLink
+                    key={contact.id}
+                    to={contact.id}
+                    prefetch="intent"
+                    className={({ isActive, isPending }) =>
+                      cx(
+                        "flex items-center gap-2 whitespace-nowrap p-4 leading-tight",
+                        isActive || isPending
+                          ? "bg-sidebar-accent"
+                          : "hover:bg-sidebar-accent",
+                        isActive
+                          ? "text-sidebar-accent-foreground"
+                          : isPending
+                            ? "text-sidebar-accent-foreground/ animate-pulse"
+                            : contact.first || contact.last
+                              ? "hover:text-sidebar-accent-foreground"
+                              : "text-sidebar-foreground/70",
+                      )
+                    }
+                  >
+                    <span className="flex-1 truncate">
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        "No Name"
+                      )}
+                    </span>
+                    <span className="size-4 flex-none">
                       <Favorite contact={contact}>
-                        <StarFilledIcon
-                          className={cx(
-                            "flex-none",
-                            isActive
-                              ? "text-primary-foreground"
-                              : isPending
-                                ? "text-foreground"
-                                : "text-muted-foreground group-hover:text-foreground",
-                          )}
-                          aria-hidden
-                        />
+                        <StarFilledIcon aria-hidden />
                       </Favorite>
-                    </>
-                  )}
-                </NavLink>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 pt-0">
-              <p className="text-sm text-muted-foreground">No contacts found</p>
-            </div>
-          )}
-        </ScrollArea>
-      </aside>
+                    </span>
+                  </NavLink>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-muted-foreground">
+                  No contacts found
+                </div>
+              )}
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <div className="w-full flex-1 p-4">
+          <LoadingOverlay>
+            <Outlet />
+          </LoadingOverlay>
+        </div>
+      </SidebarInset>
     </>
   );
 }
@@ -205,18 +202,12 @@ function SearchBar() {
           aria-hidden
         >
           {shouldShowSpinner ? (
-            <UpdateIcon
-              className="animate-spin text-muted-foreground"
-              aria-hidden
-            />
+            <UpdateIcon className="animate-spin text-muted-foreground" />
           ) : (
-            <MagnifyingGlassIcon
-              className="text-muted-foreground"
-              aria-hidden
-            />
+            <MagnifyingGlassIcon className="text-muted-foreground" />
           )}
         </div>
-        <Input
+        <SidebarInput
           ref={inputRef}
           type="search"
           name="q"
