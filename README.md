@@ -1,13 +1,13 @@
-# Personal CRM
+# Nexus
 
-This project is a small but feature-rich personal CRM. It's written in [TypeScript](https://www.typescriptlang.org/), using [Remix](https://remix.run/), [React.js](https://react.dev/) and [Tailwind CSS](https://tailwindcss.com/). I've deployed this project on [Fly.io](https://fly.io/).
+This project is a feature-rich personal CRM. It's written in [TypeScript](https://www.typescriptlang.org/), using [Remix](https://remix.run/), [React.js](https://react.dev/) and [Tailwind CSS](https://tailwindcss.com/). I've deployed this project on [Fly.io](https://fly.io/).
 
 ## Get started
 
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/m-zelinka/personal-crm.git
+   git clone https://github.com/m-zelinka/nexus.git
    ```
 
 2. Install the dependencies:
