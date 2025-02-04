@@ -6,7 +6,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 
 export const Breadcrumb = forwardRef<
   HTMLElement,
@@ -22,8 +22,8 @@ export const BreadcrumbList = forwardRef<
 >(({ className, ...props }, ref) => (
   <ol
     ref={ref}
-    className={cx(
-      "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
+    className={cn(
+      "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
       className,
     )}
     {...props}
@@ -37,7 +37,7 @@ export const BreadcrumbItem = forwardRef<
 >(({ className, ...props }, ref) => (
   <li
     ref={ref}
-    className={cx("inline-flex items-center gap-1.5", className)}
+    className={cn("inline-flex items-center gap-1.5", className)}
     {...props}
   />
 ));
@@ -54,7 +54,7 @@ export const BreadcrumbLink = forwardRef<
   return (
     <Comp
       ref={ref}
-      className={cx("transition-colors hover:text-foreground", className)}
+      className={cn("hover:text-foreground transition-colors", className)}
       {...props}
     />
   );
@@ -68,7 +68,7 @@ export const BreadcrumbPage = forwardRef<
   <span
     ref={ref}
     role="link"
-    className={cx("font-normal text-foreground", className)}
+    className={cn("text-foreground font-normal", className)}
     aria-disabled="true"
     aria-current="page"
     {...props}
@@ -83,7 +83,7 @@ export const BreadcrumbSeparator = ({
 }: ComponentProps<"li">) => (
   <li
     role="presentation"
-    className={cx("[&_svg]:size-4", className)}
+    className={cn("[&_svg]:size-4", className)}
     aria-hidden
     {...props}
   >
@@ -99,7 +99,7 @@ export const BreadcrumbEllipsis = ({
   <span
     role="presentation"
     aria-hidden="true"
-    className={cx(
+    className={cn(
       "flex size-9 items-center justify-center [&_svg]:size-4 [&_svg]:shrink-0",
       className,
     )}

@@ -2,12 +2,12 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import {
   forwardRef,
   type ComponentPropsWithoutRef,
-  type ElementRef,
+  type ComponentRef,
 } from "react";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 
 export const Separator = forwardRef<
-  ElementRef<typeof SeparatorPrimitive.Root>,
+  ComponentRef<typeof SeparatorPrimitive.Root>,
   ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
 >(
   (
@@ -18,8 +18,8 @@ export const Separator = forwardRef<
       ref={ref}
       decorative={decorative}
       orientation={orientation}
-      className={cx(
-        "shrink-0 bg-border",
+      className={cn(
+        "bg-border shrink-0",
         orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
         className,
       )}

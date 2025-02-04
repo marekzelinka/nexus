@@ -1,14 +1,14 @@
 import type { HTMLAttributes } from "react";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 
-export const Skeleton = ({
+export function Skeleton({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => {
+}: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx("animate-pulse rounded-md bg-primary/10", className)}
+      className={cn("bg-primary/10 animate-pulse rounded-md", className)}
       {...props}
     />
   );
-};
+}

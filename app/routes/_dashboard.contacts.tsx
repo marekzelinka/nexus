@@ -34,7 +34,7 @@ import {
 } from "~/components/ui/sidebar";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import type { Route } from "./+types/_dashboard.contacts";
 
 export const meta: Route.MetaFunction = () => {
@@ -101,8 +101,8 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                     to={contact.id}
                     prefetch="intent"
                     className={({ isActive, isPending }) =>
-                      cx(
-                        "flex items-center gap-2 whitespace-nowrap p-4 leading-tight",
+                      cn(
+                        "flex items-center gap-2 p-4 leading-tight whitespace-nowrap",
                         isActive || isPending
                           ? "bg-sidebar-accent"
                           : "hover:bg-sidebar-accent",
@@ -133,7 +133,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                   </NavLink>
                 ))
               ) : (
-                <div className="px-4 py-2 text-muted-foreground">
+                <div className="text-muted-foreground px-4 py-2">
                   No contacts found
                 </div>
               )}
@@ -202,7 +202,7 @@ function SearchBar() {
           aria-hidden
         >
           {shouldShowSpinner ? (
-            <UpdateIcon className="animate-spin text-muted-foreground" />
+            <UpdateIcon className="text-muted-foreground animate-spin" />
           ) : (
             <MagnifyingGlassIcon className="text-muted-foreground" />
           )}
@@ -222,7 +222,7 @@ function SearchBar() {
           className="pointer-events-none absolute inset-y-0 right-0 flex py-1.5 pr-1.5"
           aria-hidden
         >
-          <kbd className="inline-flex items-center rounded border border-muted px-1 font-mono text-[10px] text-muted-foreground">
+          <kbd className="border-muted text-muted-foreground inline-flex items-center rounded border px-1 font-mono text-[10px]">
             {shortcut}
           </kbd>
         </div>

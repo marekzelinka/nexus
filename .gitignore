@@ -1,9 +1,14 @@
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
+
+# Env vars
 .env
 !.env.example
-.DS_Store
-.react-router
-build
-node_modules
 
+# Prisma
 prisma/dev.db-journal
 prisma/dev.db

@@ -89,7 +89,7 @@ export function NoteForm({
         disabled={isSavingEdits}
         className="relative disabled:pointer-events-none disabled:opacity-50"
       >
-        <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
+        <div className="bg-background focus-within:ring-ring relative overflow-hidden rounded-lg border focus-within:ring-1">
           <Textarea
             ref={textareaRef}
             rows={3}

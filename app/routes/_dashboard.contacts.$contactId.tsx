@@ -20,7 +20,7 @@ import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { requireUserId } from "~/lib/auth.server";
 import { db } from "~/lib/db.server";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import type { Route } from "./+types/_dashboard.contacts.$contactId";
 
 export const meta: Route.MetaFunction = ({ data, error }) => {
@@ -129,7 +129,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           </Avatar>
           <div className="ml-5 flex w-full min-w-0 items-center gap-4 pb-1">
             <h1
-              className={cx(
+              className={cn(
                 "truncate text-2xl font-semibold tracking-tight",
                 contact.first || contact.last ? "" : "text-muted-foreground",
               )}
@@ -179,7 +179,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <div className="mt-6">
         <div className="mx-auto max-w-3xl">
           <nav
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1"
+            className="bg-muted inline-flex h-9 items-center justify-center rounded-lg p-1"
             aria-label="Tabs"
           >
             {tabs.map((tab) => (
@@ -190,9 +190,11 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 preventScrollReset
                 prefetch="intent"
                 className={({ isActive }) =>
-                  cx(
-                    "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-                    isActive ? "bg-background shadow" : "text-muted-foreground",
+                  cn(
+                    "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-3 py-1 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50",
+                    isActive
+                      ? "bg-background shadow-sm"
+                      : "text-muted-foreground",
                   )
                 }
               >

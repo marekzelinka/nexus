@@ -16,10 +16,10 @@ export default function Component() {
       <div className="mx-auto w-full max-w-xl">
         <Logo className="mx-auto h-11 w-auto" />
         <div className="mt-10 text-center">
-          <h1 className="text-balance text-4xl font-bold leading-[1.1] tracking-tighter">
+          <h1 className="text-4xl leading-[1.1] font-bold tracking-tighter text-balance">
             Supercharge your relationships
           </h1>
-          <p className="mx-auto max-w-2xl text-pretty text-lg font-light text-foreground">
+          <p className="text-foreground mx-auto max-w-2xl text-lg font-light text-pretty">
             Keep in touch with your personal and professional relationships.
             Move beyond the CRM&mdash;impress with thoughtfulness.
           </p>

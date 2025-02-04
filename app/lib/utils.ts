@@ -1,13 +1,9 @@
-import { defineConfig } from "cva";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export type { VariantProps } from "cva";
-
-export const { cva, cx, compose } = defineConfig({
-  hooks: {
-    onComplete: twMerge,
-  },
-});
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * This should be used any time the redirect path is user-provided

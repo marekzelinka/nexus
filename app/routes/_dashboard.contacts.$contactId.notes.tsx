@@ -103,7 +103,7 @@ function NoteSavingIndicator() {
   }
 
   return (
-    <UpdateIcon className="animate-spin text-muted-foreground" aria-hidden />
+    <UpdateIcon className="text-muted-foreground animate-spin" aria-hidden />
   );
 }
 
@@ -171,7 +171,7 @@ function NoteItem({ note }: { note: Note }) {
         <NoteText note={note} />
       </div>
       <div className="flex flex-none items-center gap-2">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {isToday(note.date)
             ? "today"
             : isYesterday(note.date)

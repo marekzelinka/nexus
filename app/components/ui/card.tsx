@@ -1,13 +1,13 @@
 import { Slot } from "@radix-ui/react-slot";
 import { forwardRef, type HTMLAttributes } from "react";
-import { cx } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 
 export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cx(
-        "rounded-xl border bg-card text-card-foreground shadow",
+      className={cn(
+        "bg-card text-card-foreground rounded-xl border shadow-sm",
         className,
       )}
       {...props}
@@ -22,7 +22,7 @@ export const CardHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cx("flex flex-col gap-y-1.5 p-6", className)}
+    className={cn("flex flex-col gap-y-1.5 p-6", className)}
     {...props}
   />
 ));
@@ -39,7 +39,7 @@ export const CardTitle = forwardRef<
   return (
     <Comp
       ref={ref}
-      className={cx("font-semibold leading-none tracking-tight", className)}
+      className={cn("leading-none font-semibold tracking-tight", className)}
       {...props}
     />
   );
@@ -52,7 +52,7 @@ export const CardDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cx("text-sm text-muted-foreground", className)}
+    className={cn("text-muted-foreground text-sm", className)}
     {...props}
   />
 ));
@@ -62,7 +62,7 @@ export const CardContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cx("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ));
 CardContent.displayName = "CardContent";
 
@@ -72,7 +72,7 @@ export const CardFooter = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cx("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center p-6 pt-0", className)}
     {...props}
   />
 ));

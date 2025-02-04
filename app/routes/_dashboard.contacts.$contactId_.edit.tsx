@@ -213,7 +213,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.first, { type: "text" })}
               />
               <ErrorList
@@ -229,7 +229,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.last, { type: "text" })}
               />
               <ErrorList
@@ -265,7 +265,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.email, { type: "email" })}
               />
               <ErrorList
@@ -281,7 +281,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.phone, { type: "tel" })}
               />
               <ErrorList
@@ -297,7 +297,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.linkedin, { type: "url" })}
               />
               <ErrorList
@@ -313,7 +313,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.social, { type: "url" })}
               />
               <ErrorList
@@ -329,7 +329,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.website, { type: "url" })}
               />
               <ErrorList
@@ -348,7 +348,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-sm bg-background"
+                className="bg-background max-w-sm"
                 {...getInputProps(fields.location, { type: "text" })}
               />
               <ErrorList
@@ -364,7 +364,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-xs bg-background"
+                className="bg-background max-w-xs"
                 {...getInputProps(fields.company, { type: "text" })}
               />
               <ErrorList
@@ -380,7 +380,7 @@ export default function Component({
             </Label>
             <div className="col-span-2">
               <Input
-                className="max-w-fit bg-background"
+                className="bg-background max-w-fit"
                 {...getInputProps(fields.birthday, { type: "date" })}
               />
               <ErrorList

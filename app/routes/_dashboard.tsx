@@ -87,7 +87,7 @@ function UserDropdown() {
         side="right"
         align="end"
         sideOffset={4}
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="px-1 py-1.5 text-sm leading-tight">
