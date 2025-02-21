@@ -1,5 +1,18 @@
-import { ChevronsUpDown, HexagonIcon, LogOutIcon } from "lucide-react";
-import { href, Link, Outlet, useNavigate } from "react-router";
+import {
+  ChevronsUpDown,
+  HexagonIcon,
+  LogOutIcon,
+  UsersIcon,
+} from "lucide-react";
+import type { ElementType } from "react";
+import {
+  href,
+  Link,
+  NavLink,
+  Outlet,
+  useMatch,
+  useNavigate,
+} from "react-router";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import {
@@ -14,6 +27,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -35,7 +50,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function DashboardLayout() {
   return (
     <SidebarProvider>
-      <DashboardSidebar />
+      <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="mx-auto w-full max-w-3xl flex-1">
@@ -47,7 +62,17 @@ export default function DashboardLayout() {
   );
 }
 
-function DashboardSidebar() {
+function AppSidebar() {
+  const data = {
+    navMain: [
+      {
+        title: "People",
+        href: href("/contacts"),
+        icon: UsersIcon,
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="none" className="h-auto border-r">
       <SidebarHeader>
@@ -67,7 +92,23 @@ function DashboardSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent></SidebarContent>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {data.navMain.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButtonNavLink
+                    title={item.title}
+                    href={item.href}
+                    icon={item.icon}
+                  />
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -76,6 +117,27 @@ function DashboardSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+function SidebarMenuButtonNavLink({
+  title,
+  href,
+  icon: Icon,
+}: {
+  title: string;
+  href: string;
+  icon: ElementType;
+}) {
+  const match = useMatch(href);
+  const active = Boolean(match);
+
+  return (
+    <SidebarMenuButton asChild isActive={active}>
+      <NavLink to={href} prefetch="intent">
+        <Icon aria-hidden /> {title}
+      </NavLink>
+    </SidebarMenuButton>
   );
 }
 
