@@ -1,0 +1,144 @@
+import { ChevronsUpDown, HexagonIcon, LogOutIcon } from "lucide-react";
+import { href, Link, Outlet, useNavigate } from "react-router";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "~/components/ui/sidebar";
+import { useUser } from "~/hooks/use-user";
+import { signOut } from "~/lib/auth";
+import { requireAuthSession } from "~/lib/session.server";
+import type { Route } from "./+types/dashboard";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  await requireAuthSession(request);
+
+  return {};
+}
+
+export default function DashboardLayout() {
+  return (
+    <SidebarProvider>
+      <DashboardSidebar />
+      <SidebarInset>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <div className="mx-auto w-full max-w-3xl flex-1">
+            <Outlet />
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
+
+function DashboardSidebar() {
+  return (
+    <Sidebar collapsible="none" className="h-auto border-r">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size="lg">
+              <Link to={href("/")}>
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <HexagonIcon aria-hidden className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Nexus</span>
+                  <span className="truncate text-xs">Free trail</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent></SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <NavUser />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+function NavUser() {
+  const user = useUser();
+
+  const navigate = useNavigate();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <Avatar className="rounded-lg">
+            <AvatarFallback className="bg-primary text-primary-foreground" />
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{user.name}</span>
+            <span className="truncate text-xs">{user.email}</span>
+          </div>
+          <ChevronsUpDown aria-hidden className="ml-auto size-4" />
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        side="right"
+        align="end"
+        sideOffset={4}
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <Avatar className="rounded-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground" />
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{user.name}</span>
+              <span className="truncate text-xs">{user.email}</span>
+            </div>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={async () => {
+            toast.promise(
+              signOut({
+                fetchOptions: {
+                  onSuccess: () => navigate(href("/")),
+                },
+              }),
+              {
+                loading: "Signing out…",
+                success: "Signed out successfully!",
+                error: "Error signing out",
+              },
+            );
+          }}
+        >
+          <LogOutIcon aria-hidden />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

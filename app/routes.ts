@@ -12,5 +12,10 @@ export default [
     route("signup", "routes/signup.tsx"),
     route("signin", "routes/signin.tsx"),
   ]),
-  ...prefix("api", [route("auth/*", "resources/better-auth.tsx")]),
+  layout("layouts/dashboard.tsx", [
+    route("contacts", "routes/contacts.tsx", [
+      index("routes/select-contact.tsx"),
+    ]),
+  ]),
+  ...prefix("api", [route("auth/*", "resources/auth-hook.tsx")]),
 ] satisfies RouteConfig;
