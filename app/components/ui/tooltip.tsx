@@ -33,10 +33,11 @@ export function TooltipTrigger({
 
 export function TooltipContent({
   sideOffset = 4,
+  showArrow = false,
   className,
   children,
   ...props
-}: ComponentProps<typeof TooltipPrimitive.Content>) {
+}: ComponentProps<typeof TooltipPrimitive.Content> & { showArrow?: boolean }) {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
@@ -49,7 +50,9 @@ export function TooltipContent({
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-primary fill-primary" />
+        {showArrow ? (
+          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-primary fill-primary" />
+        ) : null}
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );

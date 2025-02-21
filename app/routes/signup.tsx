@@ -59,7 +59,10 @@ export async function action({ request }: Route.ActionArgs) {
   const { name, email, password } = submission.value;
 
   const url = new URL(request.url);
-  const redirectTo = safeRedirect(url.searchParams.get("redirectTo"));
+  const redirectTo = safeRedirect(
+    url.searchParams.get("redirectTo"),
+    href("/"),
+  );
 
   try {
     const authResponse = await auth.api.signUpEmail({

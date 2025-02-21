@@ -30,7 +30,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -51,13 +50,7 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="mx-auto w-full max-w-3xl flex-1">
-            <Outlet />
-          </div>
-        </div>
-      </SidebarInset>
+      <Outlet />
     </SidebarProvider>
   );
 }
@@ -74,13 +67,16 @@ function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="none" className="h-auto border-r">
+    <Sidebar
+      collapsible="none"
+      className="h-auto !w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg">
+            <SidebarMenuButton asChild size="lg" className="h-8 p-0">
               <Link to={href("/")}>
-                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <HexagonIcon aria-hidden className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -94,7 +90,7 @@ function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="px-0">
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
@@ -133,7 +129,15 @@ function SidebarMenuButtonNavLink({
   const active = Boolean(match);
 
   return (
-    <SidebarMenuButton asChild isActive={active}>
+    <SidebarMenuButton
+      asChild
+      tooltip={{
+        children: title,
+        hidden: false,
+      }}
+      isActive={active}
+      className="px-2"
+    >
       <NavLink to={href} prefetch="intent">
         <Icon aria-hidden /> {title}
       </NavLink>
@@ -151,7 +155,7 @@ function NavUser() {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
           size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          className="h-8 p-0 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <Avatar className="rounded-lg">
             <AvatarFallback className="bg-primary text-primary-foreground" />
