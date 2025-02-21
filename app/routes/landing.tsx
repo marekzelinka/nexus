@@ -1,6 +1,7 @@
 import { HexagonIcon } from "lucide-react";
 import { href, Link } from "react-router";
 import { Button } from "~/components/ui/button";
+import { useOptionalUser } from "~/hooks/use-user";
 import type { Route } from "./+types/landing";
 
 export const meta: Route.MetaFunction = () => [
@@ -13,6 +14,8 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export default function Landing() {
+  const user = useOptionalUser();
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -34,14 +37,30 @@ export default function Landing() {
             relationships with ease.
           </p>
         </div>
-        <div className="flex justify-center gap-4">
-          <Button asChild size="sm">
-            <Link to={href("/signup")}>Get started</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to={href("/signin")}>Sign in</Link>
-          </Button>
-        </div>
+        {user ? (
+          <div className="flex flex-col items-center gap-2">
+            <Button asChild size="sm">
+              <Link to={href("/contacts")}>
+                Continue to dashboard <span aria-hidden>→</span>
+              </Link>
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Signed in as{" "}
+              <span className="font-semibold text-foreground">
+                {user.email}
+              </span>
+            </p>
+          </div>
+        ) : (
+          <div className="flex justify-center gap-4">
+            <Button asChild size="sm">
+              <Link to={href("/signup")}>Get started</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to={href("/signin")}>Sign in</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

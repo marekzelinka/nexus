@@ -1,4 +1,18 @@
-import { Form, href, Link, useSearchParams } from "react-router";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { APIError } from "better-auth/api";
+import { LoaderIcon } from "lucide-react";
+import {
+  data,
+  Form,
+  href,
+  Link,
+  redirect,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
+import { z } from "zod";
+import { ErrorList } from "~/components/forms";
 import {
   Accordion,
   AccordionContent,
@@ -16,12 +30,77 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { auth } from "~/lib/auth.server";
+import { EmailSchema, NameSchema, PasswordSchema } from "~/lib/user-validation";
+import { safeRedirect } from "~/lib/utils";
 import type { Route } from "./+types/signup";
+
+const SignupSchema = z.object({
+  name: NameSchema,
+  email: EmailSchema,
+  password: PasswordSchema,
+});
 
 export const meta: Route.MetaFunction = () => [{ title: "Sign up" }];
 
-export default function Signup() {
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+
+  const submission = parseWithZod(formData, {
+    schema: SignupSchema,
+  });
+  if (submission.status !== "success") {
+    return data(
+      { result: submission.reply({ hideFields: ["password"] }) },
+      { status: submission.status === "error" ? 400 : 200 },
+    );
+  }
+
+  const { name, email, password } = submission.value;
+
+  const url = new URL(request.url);
+  const redirectTo = safeRedirect(url.searchParams.get("redirectTo"));
+
+  try {
+    const authResponse = await auth.api.signUpEmail({
+      body: { name, email, password },
+      asResponse: true,
+    });
+
+    throw redirect(redirectTo, {
+      headers: authResponse.headers,
+    });
+  } catch (error) {
+    if (error instanceof APIError) {
+      return data(
+        {
+          result: submission.reply({
+            hideFields: ["password"],
+            formErrors: [error.body.message as string],
+          }),
+        },
+        { status: 400 },
+      );
+    }
+
+    throw error;
+  }
+}
+
+export default function Signup({ actionData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const loading =
+    navigation.state !== "idle" && navigation.formData !== undefined;
+
   const [searchParams] = useSearchParams();
+
+  const [form, fields] = useForm({
+    lastResult: actionData?.result,
+    constraint: getZodConstraint(SignupSchema),
+    shouldRevalidate: "onBlur",
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, { schema: SignupSchema }),
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -35,31 +114,48 @@ export default function Signup() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form method="post">
+          <Form method="post" {...getFormProps(form)}>
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor={fields.name.id}>Name</Label>
                 <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  autoComplete="email"
-                  placeholder="m@example.com"
-                  required
+                  autoComplete="name"
+                  {...getInputProps(fields.name, { type: "text" })}
                 />
+                <ErrorList id={fields.name.id} errors={fields.name.errors} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor={fields.email.id}>Email</Label>
                 <Input
-                  type="password"
-                  name="password"
-                  id="password"
+                  autoComplete="email"
+                  {...getInputProps(fields.email, { type: "email" })}
+                />
+                <ErrorList id={fields.email.id} errors={fields.email.errors} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor={fields.password.id}>Password</Label>
+                <Input
                   autoComplete="new-password"
-                  required
+                  {...getInputProps(fields.password, { type: "password" })}
+                />
+                <ErrorList
+                  id={fields.password.id}
+                  errors={fields.password.errors}
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Sign up
+              <ErrorList id={form.id} errors={form.errors} />
+              <Button
+                type="submit"
+                disabled={loading}
+                className="relative w-full"
+              >
+                {loading ? (
+                  <LoaderIcon
+                    aria-hidden
+                    className="absolute inset-y-0 left-3 animate-spin place-self-center"
+                  />
+                ) : null}
+                {loading ? "Signing up…" : "Sign up"}
               </Button>
             </div>
           </Form>

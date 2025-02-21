@@ -1,14 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 
-export let db: PrismaClient;
+export let prisma: PrismaClient;
 
 declare global {
   var __db: PrismaClient | undefined;
 }
 
 if (process.env.NODE_ENV === "production") {
-  db = new PrismaClient();
-  db.$connect();
+  prisma = new PrismaClient();
+  prisma.$connect();
 } else {
   // Prevent live-reloads from saturating your database with connections while
   // developing.
@@ -16,5 +16,5 @@ if (process.env.NODE_ENV === "production") {
     global.__db = new PrismaClient();
     global.__db.$connect();
   }
-  db = global.__db;
+  prisma = global.__db;
 }

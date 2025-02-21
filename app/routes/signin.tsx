@@ -1,4 +1,18 @@
-import { Form, href, Link, useSearchParams } from "react-router";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { APIError } from "better-auth/api";
+import { LoaderIcon } from "lucide-react";
+import {
+  data,
+  Form,
+  href,
+  Link,
+  redirect,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
+import { z } from "zod";
+import { ErrorList } from "~/components/forms";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -11,12 +25,77 @@ import {
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { auth } from "~/lib/auth.server";
+import { EmailSchema, PasswordSchema } from "~/lib/user-validation";
+import { safeRedirect } from "~/lib/utils";
 import type { Route } from "./+types/signup";
+
+const SigninSchema = z.object({
+  email: EmailSchema,
+  password: PasswordSchema,
+  remember: z.boolean().optional(),
+});
 
 export const meta: Route.MetaFunction = () => [{ title: "Sign in" }];
 
-export default function Signin() {
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+
+  const submission = parseWithZod(formData, {
+    schema: SigninSchema,
+  });
+  if (submission.status !== "success") {
+    return data(
+      { result: submission.reply({ hideFields: ["password"] }) },
+      { status: submission.status === "error" ? 400 : 200 },
+    );
+  }
+
+  const { email, password, remember } = submission.value;
+
+  const url = new URL(request.url);
+  const redirectTo = safeRedirect(url.searchParams.get("redirectTo"));
+
+  try {
+    const authResponse = await auth.api.signInEmail({
+      body: { email, password, rememberMe: remember ?? false },
+      asResponse: true,
+    });
+
+    throw redirect(redirectTo, {
+      headers: authResponse.headers,
+    });
+  } catch (error) {
+    if (error instanceof APIError) {
+      return data(
+        {
+          result: submission.reply({
+            hideFields: ["password"],
+            formErrors: [error.body.message as string],
+          }),
+        },
+        { status: 400 },
+      );
+    }
+
+    throw error;
+  }
+}
+
+export default function Signin({ actionData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const loading =
+    navigation.state !== "idle" && navigation.formData !== undefined;
+
   const [searchParams] = useSearchParams();
+
+  const [form, fields] = useForm({
+    lastResult: actionData?.result,
+    constraint: getZodConstraint(SigninSchema),
+    shouldRevalidate: "onBlur",
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, { schema: SigninSchema }),
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,35 +109,50 @@ export default function Signin() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form method="post">
+          <Form method="post" {...getFormProps(form)}>
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor={fields.email.id}>Email</Label>
                 <Input
-                  type="email"
-                  name="email"
-                  id="email"
                   autoComplete="email"
-                  placeholder="m@example.com"
-                  required
+                  {...getInputProps(fields.email, { type: "email" })}
                 />
+                <ErrorList id={fields.email.id} errors={fields.email.errors} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor={fields.password.id}>Password</Label>
                 <Input
-                  type="password"
-                  name="password"
-                  id="password"
                   autoComplete="current-password"
-                  required
+                  {...getInputProps(fields.password, { type: "password" })}
+                />
+                <ErrorList
+                  id={fields.password.id}
+                  errors={fields.password.errors}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <Checkbox name="remember" id="remember" />
-                <Label htmlFor="remember">Remember me</Label>
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    {...getInputProps(fields.remember, {
+                      type: "checkbox",
+                    })}
+                  />
+                  <Label htmlFor={fields.remember.id}>Remember me</Label>
+                </div>
               </div>
-              <Button type="submit" className="w-full">
-                Sign in
+              <ErrorList id={form.id} errors={form.errors} />
+              <Button
+                type="submit"
+                disabled={loading}
+                className="relative w-full"
+              >
+                {loading ? (
+                  <LoaderIcon
+                    aria-hidden
+                    className="absolute inset-y-0 left-3 animate-spin place-self-center"
+                  />
+                ) : null}
+                {loading ? "Signing in…" : "Sign in"}
               </Button>
             </div>
           </Form>

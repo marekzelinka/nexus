@@ -1,5 +1,16 @@
 import { HexagonIcon } from "lucide-react";
-import { href, Link, Outlet } from "react-router";
+import { href, Link, Outlet, redirect } from "react-router";
+import { getAuthSession } from "~/lib/session.server";
+import type { Route } from "./+types/auth";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getAuthSession(request);
+  if (session) {
+    throw redirect("/");
+  }
+
+  return {};
+}
 
 export default function AuthLayout() {
   return (
