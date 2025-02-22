@@ -1,5 +1,7 @@
 import { SearchIcon, StarIcon } from "lucide-react";
+import { matchSorter } from "match-sorter";
 import { Form, href, NavLink, Outlet } from "react-router";
+import sortBy from "sort-by";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import {
@@ -11,28 +13,33 @@ import {
   SidebarInput,
   SidebarInset,
 } from "~/components/ui/sidebar";
+import { db } from "~/lib/db.server";
+import { requireAuthSession } from "~/lib/session.server";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contacts";
-
 export const meta: Route.MetaFunction = () => [{ title: "People" }];
 
-export default function Contacts() {
-  const contacts = [
-    {
-      id: "1",
-      first: "Your",
-      last: "Name",
-      avatar: "https://placecats.com/200/200",
-      favorite: false,
-    },
-    {
-      id: "2",
-      first: "Your",
-      last: "Friend",
-      avatar: "https://placecats.com/200/200",
-      favorite: true,
-    },
-  ];
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await requireAuthSession(request);
+
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q");
+
+  let contacts = await db.contact.findMany({
+    select: { id: true, first: true, last: true, favorite: true },
+    where: { userId: session.user.id },
+  });
+  if (query) {
+    contacts = matchSorter(contacts, query, {
+      keys: ["first", "last"],
+    });
+  }
+
+  return { contacts: contacts.sort(sortBy("last", "createdAt")) };
+}
+
+export default function Contacts({ loaderData }: Route.ComponentProps) {
+  const { contacts } = loaderData;
 
   return (
     <>
@@ -103,14 +110,14 @@ function SearchForm() {
   return (
     <Form>
       <div>
-        <Label htmlFor="search" className="sr-only">
+        <Label htmlFor="q" className="sr-only">
           Search
         </Label>
         <div className="grid grid-cols-1">
           <SidebarInput
             type="search"
-            name="search"
-            id="search"
+            name="q"
+            id="q"
             placeholder="Type to search..."
             className="col-start-1 row-start-1 pl-8"
           />

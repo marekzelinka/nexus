@@ -20,6 +20,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  contacts      Contact[]
 
   @@unique([email])
   @@map("user")
@@ -68,4 +69,18 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  first     String?
+  last      String?
+  avatar    String?
+  favorite  Boolean?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact")
 }

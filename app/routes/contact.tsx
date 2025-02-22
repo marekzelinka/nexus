@@ -1,7 +1,6 @@
-import { ArchiveIcon, PencilIcon, StarIcon } from "lucide-react";
-import { Form, href } from "react-router";
+import { StarIcon } from "lucide-react";
+import { Form } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contact";
@@ -48,37 +47,7 @@ export default function Contact() {
             </h1>
             <Favorite contact={contact} />
           </div>
-          <div className="mt-6 flex flex-row justify-stretch gap-4">
-            <Form
-              action={href("/contacts/:contactId/edit", {
-                contactId: contact.id,
-              })}
-            >
-              <Button type="submit" variant="outline" size="sm">
-                <PencilIcon aria-hidden />
-                Edit
-              </Button>
-            </Form>
-            <Form
-              method="post"
-              action={href("/contacts/:contactId/destroy", {
-                contactId: contact.id,
-              })}
-              onSubmit={(event) => {
-                const response = confirm(
-                  "Please confirm you want to delete this record.",
-                );
-                if (!response) {
-                  event.preventDefault();
-                }
-              }}
-            >
-              <Button type="submit" variant="outline" size="sm">
-                <ArchiveIcon aria-hidden />
-                Delete
-              </Button>
-            </Form>
-          </div>
+          <div className="mt-6 flex flex-row justify-stretch gap-4"></div>
         </div>
       </div>
     </div>

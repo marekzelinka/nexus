@@ -1,12 +1,12 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "./db.server";
+import { db } from "./db.server";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "./user-validation";
 
 export type Session = typeof auth.$Infer.Session;
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
+  database: prismaAdapter(db, {
     provider: "sqlite",
   }),
   session: {
