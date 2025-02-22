@@ -1,29 +1,38 @@
+import type { Contact } from "@prisma/client";
 import { StarIcon } from "lucide-react";
-import { Form } from "react-router";
+import { data, Form } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Toggle } from "~/components/ui/toggle";
+import { db } from "~/lib/db.server";
+import { requireAuthSession } from "~/lib/session.server";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contact";
 
 export const meta: Route.MetaFunction = () => [{ title: "Your Friend" }];
 
-export default function Contact() {
-  const contact = {
-    id: "1",
-    first: "Your",
-    last: "Name",
-    avatar: "https://placecats.com/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const session = await requireAuthSession(request);
+
+  const contact = await db.contact.findUnique({
+    select: { id: true, first: true, last: true, avatar: true, favorite: true },
+    where: { id: params.contactId, userId: session.user.id },
+  });
+  if (!contact) {
+    throw data("Not found", { status: 404 });
+  }
+
+  return { contact };
+}
+
+export default function Contact({ loaderData }: Route.ComponentProps) {
+  const { contact } = loaderData;
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-end gap-5">
         <div className="flex">
           <Avatar className="size-24">
-            <AvatarImage src={contact.avatar} alt="" />
+            <AvatarImage src={contact.avatar ?? undefined} alt="" />
             <AvatarFallback
               name={
                 contact.first || contact.last
@@ -54,7 +63,7 @@ export default function Contact() {
   );
 }
 
-function Favorite({ contact }: { contact: { favorite: boolean } }) {
+function Favorite({ contact }: { contact: Pick<Contact, "favorite"> }) {
   return (
     <Form method="post">
       <input
@@ -64,7 +73,7 @@ function Favorite({ contact }: { contact: { favorite: boolean } }) {
       />
       <Toggle
         type="submit"
-        pressed={contact.favorite}
+        pressed={contact.favorite ?? undefined}
         variant="outline"
         size="sm"
       >
