@@ -17,6 +17,7 @@ import { db } from "~/lib/db.server";
 import { requireAuthSession } from "~/lib/session.server";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contacts";
+
 export const meta: Route.MetaFunction = () => [{ title: "People" }];
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -28,6 +29,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let contacts = await db.contact.findMany({
     select: { id: true, first: true, last: true, favorite: true },
     where: { userId: session.user.id },
+    orderBy: [{ createdAt: "desc" }, { last: "asc" }],
   });
   if (query) {
     contacts = matchSorter(contacts, query, {
