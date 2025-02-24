@@ -1,6 +1,6 @@
 import { SearchIcon, StarIcon } from "lucide-react";
 import { matchSorter } from "match-sorter";
-import { Form, href, NavLink, Outlet } from "react-router";
+import { Form, href, NavLink, Outlet, redirect } from "react-router";
 import sortBy from "sort-by";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
@@ -43,12 +43,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
-  await db.contact.create({
+  const contact = await db.contact.create({
     select: { id: true },
     data: { user: { connect: { id: session.user.id } } },
   });
 
-  return {};
+  return redirect(href("/contacts/:contactId", { contactId: contact.id }));
 }
 
 export default function Contacts({ loaderData }: Route.ComponentProps) {
