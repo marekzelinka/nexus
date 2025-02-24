@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Toggle } from "~/components/ui/toggle";
 import { db } from "~/lib/db.server";
 import { requireAuthSession } from "~/lib/session.server";
-import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contact";
 
 export const meta: Route.MetaFunction = ({ data, error }) => [
@@ -85,7 +84,7 @@ function Favorite({ contact }: { contact: Pick<Contact, "favorite"> }) {
         variant="outline"
         size="sm"
       >
-        <StarIcon className={cn(contact.favorite ? "fill-current" : "")} />
+        <StarIcon aria-hidden />
         <span className="sr-only">
           {contact.favorite ? "Remove from favorites" : "Add to favorites"}
         </span>

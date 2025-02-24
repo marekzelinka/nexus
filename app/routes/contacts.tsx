@@ -100,7 +100,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                     )}
                   </span>
                   {contact.favorite ? (
-                    <StarIcon aria-hidden className="size-4 fill-current" />
+                    <StarIcon aria-hidden className="size-4" />
                   ) : null}
                 </NavLink>
               ))}
