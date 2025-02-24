@@ -10,7 +10,12 @@ export default function SelectContact() {
       description="Select a contact on the left, or create a new contact."
     >
       <Form method="post" action={href("/contacts")}>
-        <Button type="submit" size="sm" aria-label="New contact">
+        <Button
+          type="submit"
+          variant="secondary"
+          size="sm"
+          aria-label="New contact"
+        >
           <PlusIcon aria-hidden />
           New contact
         </Button>
