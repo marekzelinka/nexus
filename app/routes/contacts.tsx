@@ -1,5 +1,7 @@
-import { SearchIcon, StarIcon } from "lucide-react";
+import { LoaderIcon, SearchIcon, StarIcon } from "lucide-react";
 import { matchSorter } from "match-sorter";
+import { useEffect, useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import {
   Form,
   href,
@@ -7,8 +9,11 @@ import {
   Outlet,
   redirect,
   useNavigation,
+  useSearchParams,
+  useSubmit,
 } from "react-router";
 import sortBy from "sort-by";
+import { useSpinDelay } from "spin-delay";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import {
@@ -44,7 +49,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
   }
 
-  return { contacts: contacts.sort(sortBy("last", "createdAt")) };
+  return { query, contacts: contacts.sort(sortBy("last", "createdAt")) };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -63,6 +68,10 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
 
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
+  const searching = new URLSearchParams(navigation.location?.search).has("q");
+  const showLoadingOverlay = useSpinDelay(loading && !searching, {
+    delay: 200,
+  });
 
   return (
     <>
@@ -127,8 +136,8 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
       </Sidebar>
       <SidebarInset
         className={cn(
-          "transition-opacity delay-200 duration-200",
-          loading ? "opacity-25" : "",
+          "transition-opacity",
+          showLoadingOverlay ? "opacity-25" : "",
         )}
       >
         <div className="flex flex-1 flex-col gap-4 p-4">
@@ -142,24 +151,75 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
 }
 
 function SearchForm() {
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query");
+
+  // Used to submit the form for every keystroke.
+  const submit = useSubmit();
+
+  const navigation = useNavigation();
+  const searching = new URLSearchParams(navigation.location?.search).has("q");
+  const showSearchSpinner = useSpinDelay(searching, { delay: 200 });
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync search input value with the URL Search Params.
+  useEffect(() => {
+    const searchField = inputRef.current;
+    if (searchField) {
+      searchField.value = query ?? "";
+    }
+  }, [query]);
+
+  // Adds a keyboard shortcut to focus the search input.
+  const SEARCH_KEYBOARD_SHORTCUT = "/";
+  useHotkeys(
+    SEARCH_KEYBOARD_SHORTCUT,
+    () => {
+      const input = inputRef.current;
+      if (input) {
+        input.focus({ preventScroll: true });
+        input.select();
+      }
+    },
+    { preventDefault: true },
+  );
+
   return (
-    <Form>
+    <Form
+      onChange={(event) => {
+        const isFirstSearch = query === null;
+        submit(event.currentTarget, {
+          replace: !isFirstSearch,
+        });
+      }}
+    >
       <div>
         <Label htmlFor="q" className="sr-only">
-          Search
+          Search contacts
         </Label>
         <div className="grid grid-cols-1">
           <SidebarInput
+            ref={inputRef}
             type="search"
             name="q"
             id="q"
+            defaultValue={query ?? undefined}
             placeholder="Type to search..."
-            className="col-start-1 row-start-1 pl-8"
+            className="col-start-1 row-start-1 pr-8 pl-8"
           />
-          <SearchIcon
-            aria-hidden
-            className="pointer-events-none col-start-1 row-start-1 ml-2 size-4 self-center opacity-50"
-          />
+          <div className="pointer-events-none col-start-1 row-start-1 ml-2 self-center opacity-50">
+            {showSearchSpinner ? (
+              <LoaderIcon aria-hidden className="size-4 animate-spin" />
+            ) : (
+              <SearchIcon aria-hidden className="size-4" />
+            )}
+          </div>
+          <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
+            <kbd className="flex h-5 items-center rounded border bg-sidebar-accent p-1 px-1.5 font-mono text-[10px] font-medium tracking-widest text-sidebar-accent-foreground">
+              /
+            </kbd>
+          </div>
         </div>
       </div>
     </Form>
