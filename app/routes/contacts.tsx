@@ -81,12 +81,19 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                   key={contact.id}
                   to={href("/contacts/:contactId", { contactId: contact.id })}
                   prefetch="intent"
-                  className={({ isActive }) =>
+                  className={({ isActive, isPending }) =>
                     cn(
                       "group flex items-center gap-2 p-4 not-last:border-b",
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        : isPending
+                          ? "bg-sidebar-accent"
+                          : contact.first || contact.last
+                            ? ""
+                            : "text-muted-foreground",
+                      !isActive || !isPending
+                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        : "",
                     )
                   }
                 >
