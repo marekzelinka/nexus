@@ -125,7 +125,7 @@ function SidebarMenuButtonNavLink({
   href: string;
   icon: ElementType;
 }) {
-  const match = useMatch(href);
+  const match = useMatch({ path: href, end: false });
   const active = Boolean(match);
 
   return (

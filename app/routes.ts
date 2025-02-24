@@ -15,7 +15,10 @@ export default [
   layout("layouts/dashboard.tsx", [
     route("contacts", "routes/contacts.tsx", [
       index("routes/select-contact.tsx"),
-      ...prefix(":contactId", [index("routes/contact.tsx")]),
+      ...prefix(":contactId", [
+        index("routes/contact.tsx"),
+        route("edit", "routes/edit-contact.tsx"),
+      ]),
     ]),
   ]),
   ...prefix("api", [route("auth/*", "resources/auth-hook.tsx")]),
