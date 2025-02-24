@@ -93,7 +93,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                   prefetch="intent"
                   className={({ isActive, isPending }) =>
                     cn(
-                      "group flex items-center gap-2 p-4 not-last:border-b",
+                      "flex items-center gap-2 p-4 not-last:border-b",
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground"
                         : isPending
@@ -116,11 +116,9 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                       "No Name"
                     )}
                   </span>
-                  <span className="size-4 flex-none">
-                    {contact.favorite ? (
-                      <StarIcon aria-hidden className="fill-current" />
-                    ) : null}
-                  </span>
+                  {contact.favorite ? (
+                    <StarIcon aria-hidden className="size-4" />
+                  ) : null}
                 </NavLink>
               ))}
             </SidebarGroupContent>
