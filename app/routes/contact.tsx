@@ -1,5 +1,5 @@
 import type { Contact } from "@prisma/client";
-import { PencilIcon, StarIcon } from "lucide-react";
+import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import { data, Form, href } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -73,6 +73,25 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
               <Button type="submit" variant="outline" size="sm">
                 <PencilIcon aria-hidden />
                 Edit
+              </Button>
+            </Form>
+            <Form
+              method="post"
+              action={href("/contacts/:contactId/destroy", {
+                contactId: contact.id,
+              })}
+              onSubmit={(event) => {
+                const response = confirm(
+                  "Please confirm you want to delete this record.",
+                );
+                if (!response) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              <Button type="submit" variant="outline" size="sm">
+                <TrashIcon aria-hidden />
+                Delete
               </Button>
             </Form>
           </div>

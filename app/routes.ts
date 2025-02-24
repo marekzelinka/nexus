@@ -18,6 +18,7 @@ export default [
       ...prefix(":contactId", [
         index("routes/contact.tsx"),
         route("edit", "routes/edit-contact.tsx"),
+        route("destroy", "routes/destroy-contact.tsx"),
       ]),
     ]),
   ]),
