@@ -1,6 +1,7 @@
+import type { Contact } from "@prisma/client";
 import { LoaderIcon, SearchIcon, StarIcon } from "lucide-react";
 import { matchSorter } from "match-sorter";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type PropsWithChildren } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   Form,
@@ -8,6 +9,7 @@ import {
   NavLink,
   Outlet,
   redirect,
+  useFetcher,
   useNavigation,
   useSearchParams,
   useSubmit,
@@ -125,9 +127,9 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                       "No Name"
                     )}
                   </span>
-                  {contact.favorite ? (
-                    <StarIcon aria-hidden className="size-4" />
-                  ) : null}
+                  <Favorite contact={contact}>
+                    <StarIcon aria-hidden className="size-4 fill-current" />
+                  </Favorite>
                 </NavLink>
               ))}
             </SidebarGroupContent>
@@ -224,4 +226,21 @@ function SearchForm() {
       </div>
     </Form>
   );
+}
+
+function Favorite({
+  contact,
+  children,
+}: PropsWithChildren<{
+  contact: Pick<Contact, "id" | "favorite">;
+}>) {
+  const fetcher = useFetcher({ key: `contact:${contact.id}` });
+  const favorite = fetcher.formData
+    ? fetcher.formData.get("favorite") === "true"
+    : Boolean(contact.favorite);
+  if (!favorite) {
+    return null;
+  }
+
+  return children;
 }

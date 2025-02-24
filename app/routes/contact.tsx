@@ -1,11 +1,12 @@
 import type { Contact } from "@prisma/client";
 import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
-import { data, Form, href } from "react-router";
+import { data, Form, href, useFetcher } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { db } from "~/lib/db.server";
 import { requireAuthSession } from "~/lib/session.server";
+import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contact";
 
 export const meta: Route.MetaFunction = ({ data, error }) => [
@@ -28,6 +29,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   if (!contact) {
     throw data("No contact found", { status: 404 });
   }
+
+  return { contact };
+}
+
+export async function action({ request, params }: Route.ActionArgs) {
+  const session = await requireAuthSession(request);
+
+  const formData = await request.formData();
+  const favorite = formData.get("favorite");
+
+  const contact = await db.contact.update({
+    select: { id: true },
+    data: { favorite: favorite === "true" },
+    where: { id: params.contactId, userId: session.user.id },
+  });
 
   return { contact };
 }
@@ -101,9 +117,14 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
   );
 }
 
-function Favorite({ contact }: { contact: Pick<Contact, "favorite"> }) {
+function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
+  const fetcher = useFetcher({ key: `contact:${contact.id}` });
+  const favorite = fetcher.formData
+    ? fetcher.formData.get("favorite") === "true"
+    : Boolean(contact.favorite);
+
   return (
-    <Form method="post">
+    <fetcher.Form method="post">
       <input
         type="hidden"
         name="favorite"
@@ -111,15 +132,17 @@ function Favorite({ contact }: { contact: Pick<Contact, "favorite"> }) {
       />
       <Toggle
         type="submit"
-        pressed={contact.favorite ?? undefined}
+        name="intent"
+        value="favoriteContact"
+        pressed={favorite}
         variant="outline"
         size="sm"
       >
-        <StarIcon aria-hidden />
+        <StarIcon aria-hidden className={cn(favorite ? "fill-current" : "")} />
         <span className="sr-only">
-          {contact.favorite ? "Remove from favorites" : "Add to favorites"}
+          {favorite ? "Remove from favorites" : "Add to favorites"}
         </span>
       </Toggle>
-    </Form>
+    </fetcher.Form>
   );
 }
