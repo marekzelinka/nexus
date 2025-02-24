@@ -1,6 +1,13 @@
 import { SearchIcon, StarIcon } from "lucide-react";
 import { matchSorter } from "match-sorter";
-import { Form, href, NavLink, Outlet, redirect } from "react-router";
+import {
+  Form,
+  href,
+  NavLink,
+  Outlet,
+  redirect,
+  useNavigation,
+} from "react-router";
 import sortBy from "sort-by";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
@@ -54,6 +61,9 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Contacts({ loaderData }: Route.ComponentProps) {
   const { contacts } = loaderData;
 
+  const navigation = useNavigation();
+  const loading = navigation.state === "loading";
+
   return (
     <>
       <Sidebar
@@ -106,18 +116,25 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                       "No Name"
                     )}
                   </span>
-                  {contact.favorite ? (
-                    <StarIcon aria-hidden className="size-4" />
-                  ) : null}
+                  <span className="size-4 flex-none">
+                    {contact.favorite ? (
+                      <StarIcon aria-hidden className="fill-current" />
+                    ) : null}
+                  </span>
                 </NavLink>
               ))}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset
+        className={cn(
+          "transition-opacity delay-200 duration-200",
+          loading ? "opacity-25" : "",
+        )}
+      >
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="mx-auto w-full max-w-3xl flex-1">
+          <div className="w-full flex-1">
             <Outlet />
           </div>
         </div>
