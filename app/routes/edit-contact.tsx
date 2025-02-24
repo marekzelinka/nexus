@@ -1,6 +1,13 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { data, Form, href, redirect, useNavigation } from "react-router";
+import {
+  data,
+  Form,
+  href,
+  redirect,
+  useNavigate,
+  useNavigation,
+} from "react-router";
 import { z } from "zod";
 import { ErrorList } from "~/components/forms";
 import { Button } from "~/components/ui/button";
@@ -105,6 +112,9 @@ export default function EditContact({
     navigation.location?.pathname ===
     href("/contacts/:contactId/edit", { contactId: params.contactId });
 
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
+
   return (
     <Form method="post" {...getFormProps(form)}>
       <div className="grid grid-cols-6 gap-6">
@@ -153,10 +163,10 @@ export default function EditContact({
           </TabsContent>
         </Tabs>
         <div className="col-span-full flex justify-end gap-3 border-t pt-4">
-          <Button variant="ghost" size="sm">
+          <Button type="button" variant="ghost" size="sm" onClick={goBack}>
             Cancel
           </Button>
-          <Button size="sm" disabled={loading}>
+          <Button type="submit" size="sm" disabled={loading}>
             {loading ? "Saving…" : "Save"}
           </Button>
         </div>
