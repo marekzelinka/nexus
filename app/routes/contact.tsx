@@ -8,7 +8,15 @@ import { requireAuthSession } from "~/lib/session.server";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/contact";
 
-export const meta: Route.MetaFunction = () => [{ title: "Your Friend" }];
+export const meta: Route.MetaFunction = ({ data, error }) => [
+  {
+    title: error
+      ? "No contact found"
+      : data.contact.first || data.contact.last
+        ? `${data.contact.first ?? ""} ${data.contact.last ?? ""}`.trim()
+        : "No Name",
+  },
+];
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await requireAuthSession(request);
@@ -18,7 +26,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
-    throw data("Not found", { status: 404 });
+    throw data("No contact found", { status: 404 });
   }
 
   return { contact };
@@ -36,7 +44,7 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
             <AvatarFallback
               name={
                 contact.first || contact.last
-                  ? `${contact.first} ${contact.last}`.trim()
+                  ? `${contact.first ?? ""} ${contact.last ?? ""}`.trim()
                   : undefined
               }
               className="text-3xl [&_svg]:size-14"
