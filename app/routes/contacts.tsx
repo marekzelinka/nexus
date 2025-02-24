@@ -154,7 +154,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
 
 function SearchForm() {
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("query");
+  const query = searchParams.get("q");
 
   // Used to submit the form for every keystroke.
   const submit = useSubmit();
@@ -167,9 +167,9 @@ function SearchForm() {
 
   // Sync search input value with the URL Search Params.
   useEffect(() => {
-    const searchField = inputRef.current;
-    if (searchField) {
-      searchField.value = query ?? "";
+    const input = inputRef.current;
+    if (input) {
+      input.value = query ?? "";
     }
   }, [query]);
 
