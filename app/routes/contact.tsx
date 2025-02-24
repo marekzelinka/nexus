@@ -1,7 +1,8 @@
 import type { Contact } from "@prisma/client";
-import { StarIcon } from "lucide-react";
-import { data, Form } from "react-router";
+import { PencilIcon, StarIcon } from "lucide-react";
+import { data, Form, href } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { db } from "~/lib/db.server";
 import { requireAuthSession } from "~/lib/session.server";
@@ -63,7 +64,18 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
             </h1>
             <Favorite contact={contact} />
           </div>
-          <div className="mt-6 flex flex-row justify-stretch gap-4"></div>
+          <div className="mt-6 flex flex-row justify-stretch gap-4">
+            <Form
+              action={href("/contacts/:contactId/edit", {
+                contactId: contact.id,
+              })}
+            >
+              <Button type="submit" variant="outline" size="sm">
+                <PencilIcon aria-hidden />
+                Edit
+              </Button>
+            </Form>
+          </div>
         </div>
       </div>
     </div>
