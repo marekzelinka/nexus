@@ -40,6 +40,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { contacts: contacts.sort(sortBy("last", "createdAt")) };
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const session = await requireAuthSession(request);
+
+  await db.contact.create({
+    select: { id: true },
+    data: { user: { connect: { id: session.user.id } } },
+  });
+
+  return {};
+}
+
 export default function Contacts({ loaderData }: Route.ComponentProps) {
   const { contacts } = loaderData;
 
