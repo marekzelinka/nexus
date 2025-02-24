@@ -57,7 +57,7 @@ export default function Landing() {
               <Link to={href("/signup")}>Get started</Link>
             </Button>
             <Button asChild size="sm">
-              <Link to={href("/signin")}>Sign in</Link>
+              <Link to={href("/signin")}>Log in</Link>
             </Button>
           </div>
         )}

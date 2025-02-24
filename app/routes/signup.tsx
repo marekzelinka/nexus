@@ -91,10 +91,6 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Signup({ actionData }: Route.ComponentProps) {
-  const navigation = useNavigation();
-  const loading =
-    navigation.state !== "idle" && navigation.formData !== undefined;
-
   const [searchParams] = useSearchParams();
 
   const [form, fields] = useForm({
@@ -104,6 +100,9 @@ export default function Signup({ actionData }: Route.ComponentProps) {
     onValidate: ({ formData }) =>
       parseWithZod(formData, { schema: SignupSchema }),
   });
+
+  const navigation = useNavigation();
+  const loading = navigation.location?.pathname === href("/signup");
 
   return (
     <div className="flex flex-col gap-6">

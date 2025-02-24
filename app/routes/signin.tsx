@@ -86,10 +86,6 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Signin({ actionData }: Route.ComponentProps) {
-  const navigation = useNavigation();
-  const loading =
-    navigation.state !== "idle" && navigation.formData !== undefined;
-
   const [searchParams] = useSearchParams();
 
   const [form, fields] = useForm({
@@ -99,6 +95,9 @@ export default function Signin({ actionData }: Route.ComponentProps) {
     onValidate: ({ formData }) =>
       parseWithZod(formData, { schema: SigninSchema }),
   });
+
+  const navigation = useNavigation();
+  const loading = navigation.location?.pathname === href("/signin");
 
   return (
     <div className="flex flex-col gap-6">
