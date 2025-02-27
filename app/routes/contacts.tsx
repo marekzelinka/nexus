@@ -97,41 +97,49 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {contacts.map((contact) => (
-                <NavLink
-                  key={contact.id}
-                  to={href("/contacts/:contactId", { contactId: contact.id })}
-                  prefetch="intent"
-                  className={({ isActive, isPending }) =>
-                    cn(
-                      "flex items-center gap-2 p-4 not-last:border-b",
-                      isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : isPending
-                          ? "bg-sidebar-accent"
-                          : contact.first || contact.last
-                            ? ""
-                            : "text-muted-foreground",
-                      !isActive || !isPending
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "",
-                    )
-                  }
-                >
-                  <span className="flex-1 truncate text-sm leading-tight font-medium">
-                    {contact.first || contact.last ? (
-                      <>
-                        {contact.first} {contact.last}
-                      </>
-                    ) : (
-                      "No Name"
-                    )}
-                  </span>
-                  <Favorite contact={contact}>
-                    <StarIcon aria-hidden className="size-4 fill-current" />
-                  </Favorite>
-                </NavLink>
-              ))}
+              {contacts.length ? (
+                contacts.map((contact) => (
+                  <NavLink
+                    key={contact.id}
+                    to={href("/contacts/:contactId", { contactId: contact.id })}
+                    prefetch="intent"
+                    className={({ isActive, isPending }) =>
+                      cn(
+                        "flex items-center gap-2 p-4 not-last:border-b",
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : isPending
+                            ? "bg-sidebar-accent"
+                            : contact.first || contact.last
+                              ? ""
+                              : "text-muted-foreground",
+                        !isActive || !isPending
+                          ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          : "",
+                      )
+                    }
+                  >
+                    <span className="flex-1 truncate text-sm leading-tight font-medium">
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        "No Name"
+                      )}
+                    </span>
+                    <Favorite contact={contact}>
+                      <StarIcon aria-hidden className="size-4 fill-current" />
+                    </Favorite>
+                  </NavLink>
+                ))
+              ) : (
+                <div className="p-4">
+                  <p className="text-sm text-sidebar-foreground/70">
+                    No contacts
+                  </p>
+                </div>
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
