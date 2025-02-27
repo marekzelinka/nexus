@@ -12,7 +12,7 @@ export function Empty({
   children?: ReactNode;
 }) {
   return (
-    <div className="w-full px-6 py-8">
+    <div className="px-6 py-8">
       <div className="flex flex-col items-center justify-center gap-4">
         {icon ? (
           <div className="flex items-center justify-center text-4xl text-muted-foreground">

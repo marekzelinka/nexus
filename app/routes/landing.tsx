@@ -44,9 +44,9 @@ export default function Landing() {
                 Continue to dashboard <span aria-hidden>→</span>
               </Link>
             </Button>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs">
               Signed in as{" "}
-              <span className="font-semibold text-foreground">
+              <span className="font-semibold">
                 {user.email}
               </span>
             </p>
