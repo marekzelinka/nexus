@@ -1,6 +1,7 @@
 import type { Contact } from "@prisma/client";
 import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import { data, Form, href, useFetcher } from "react-router";
+import { GenericErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
@@ -27,7 +28,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
-    throw data("No contact found", { status: 404 });
+    throw data(`No user with the username "${params.contactId}" exists`, {
+      status: 404,
+    });
   }
 
   return { contact };
@@ -36,16 +39,30 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
+  const contact = await db.contact.findUnique({
+    select: { id: true },
+    where: { id: params.contactId, userId: session.user.id },
+  });
+  if (!contact) {
+    throw data(`No user with the username "${params.contactId}" exists`, {
+      status: 404,
+    });
+  }
+
   const formData = await request.formData();
   const favorite = formData.get("favorite");
 
-  const contact = await db.contact.update({
+  const updated = await db.contact.update({
     select: { id: true },
     data: { favorite: favorite === "true" },
     where: { id: params.contactId, userId: session.user.id },
   });
 
-  return { contact };
+  return { contact: updated };
+}
+
+export function ErrorBoundary() {
+  return <GenericErrorBoundary />;
 }
 
 export default function Contact({ loaderData }: Route.ComponentProps) {

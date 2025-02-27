@@ -9,6 +9,7 @@ import {
   useNavigation,
 } from "react-router";
 import { z } from "zod";
+import { GenericErrorBoundary } from "~/components/error-boundary";
 import { ErrorList } from "~/components/forms";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -43,7 +44,9 @@ const EditContactSchema = z.object({
     .transform((arg) => arg || null),
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Edit contact" }];
+export const meta: Route.MetaFunction = ({ error }) => [
+  { title: error ? "No contact found" : "Edit contact" },
+];
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await requireAuthSession(request);
@@ -53,7 +56,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
-    throw data("No contact found", { status: 404 });
+    throw data(`No user with the username "${params.contactId}" exists`, {
+      status: 404,
+    });
   }
 
   return { contact };
@@ -67,7 +72,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
-    throw data("No contact found", { status: 404 });
+    throw data(`No user with the username "${params.contactId}" exists`, {
+      status: 404,
+    });
   }
 
   const formData = await request.formData();
@@ -88,6 +95,10 @@ export async function action({ request, params }: Route.ActionArgs) {
   });
 
   throw redirect(`/contacts/${params.contactId}`);
+}
+
+export function ErrorBoundary() {
+  return <GenericErrorBoundary />;
 }
 
 export default function EditContact({
