@@ -22,5 +22,5 @@ export default [
       ]),
     ]),
   ]),
-  ...prefix("api", [route("auth/*", "resources/auth-hook.tsx")]),
+  ...prefix("api", [route("auth/*", "resources/auth-callback.tsx")]),
 ] satisfies RouteConfig;
