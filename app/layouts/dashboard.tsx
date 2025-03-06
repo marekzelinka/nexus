@@ -34,6 +34,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarRail,
 } from "~/components/ui/sidebar";
 import { useUser } from "~/hooks/use-user";
 import { signOut } from "~/lib/auth";
@@ -56,25 +57,20 @@ export default function DashboardLayout() {
 }
 
 function AppSidebar() {
-  const data = {
-    navMain: [
-      {
-        title: "People",
-        href: href("/contacts"),
-        icon: UsersIcon,
-      },
-    ],
-  };
+  const navMain = [
+    {
+      title: "People",
+      href: href("/contacts"),
+      icon: UsersIcon,
+    },
+  ];
 
   return (
-    <Sidebar
-      collapsible="none"
-      className="h-auto !w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
-    >
+    <Sidebar collapsible="icon" className="h-auto">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" className="h-8 p-0">
+            <SidebarMenuButton asChild size="lg">
               <Link to={href("/")}>
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <HexagonIcon aria-hidden className="size-4" />
@@ -90,9 +86,9 @@ function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupContent className="px-0">
+          <SidebarGroupContent>
             <SidebarMenu>
-              {data.navMain.map((item) => (
+              {navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButtonNavLink
                     title={item.title}
@@ -112,6 +108,7 @@ function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
@@ -155,7 +152,7 @@ function NavUser() {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
           size="lg"
-          className="h-8 p-0 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <Avatar className="rounded-lg">
             <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground" />

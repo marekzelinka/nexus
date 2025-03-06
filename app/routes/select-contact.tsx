@@ -1,11 +1,11 @@
 import { PlusIcon } from "lucide-react";
 import { Form, href } from "react-router";
-import { Empty } from "~/components/empty";
 import { Button } from "~/components/ui/button";
+import { EmptyState } from "~/components/ui/empty-state";
 
 export default function SelectContact() {
   return (
-    <Empty
+    <EmptyState
       title="No contact selected"
       description="Select a contact on the left, or create a new contact."
     >
@@ -15,6 +15,6 @@ export default function SelectContact() {
           New contact
         </Button>
       </Form>
-    </Empty>
+    </EmptyState>
   );
 }

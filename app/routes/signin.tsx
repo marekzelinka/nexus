@@ -12,7 +12,7 @@ import {
   useSearchParams,
 } from "react-router";
 import { z } from "zod";
-import { ErrorList } from "~/components/forms";
+import { ErrorList } from "~/components/error-list";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -25,6 +25,7 @@ import {
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { PasswordInput } from "~/components/ui/password-input";
 import { auth } from "~/lib/auth.server";
 import { EmailSchema, PasswordSchema } from "~/lib/user-validation";
 import { safeRedirect } from "~/lib/utils";
@@ -61,11 +62,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   try {
     const authResponse = await auth.api.signInEmail({
-      body: { email, password, rememberMe: remember ?? false },
       asResponse: true,
+      body: { email, password, rememberMe: remember ?? false },
     });
 
-    throw redirect(redirectTo, {
+    return redirect(redirectTo, {
       headers: authResponse.headers,
     });
   } catch (error) {
@@ -74,7 +75,7 @@ export async function action({ request }: Route.ActionArgs) {
         {
           result: submission.reply({
             hideFields: ["password"],
-            formErrors: [error.body.message as string],
+            formErrors: [error.body.message ?? error.message],
           }),
         },
         { status: 400 },
@@ -112,8 +113,8 @@ export default function Signin({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form method="post" {...getFormProps(form)}>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
+            <div className="space-y-6">
+              <div className="space-y-2">
                 <Label htmlFor={fields.email.id}>Email</Label>
                 <Input
                   autoComplete="email"
@@ -121,9 +122,9 @@ export default function Signin({ actionData }: Route.ComponentProps) {
                 />
                 <ErrorList id={fields.email.id} errors={fields.email.errors} />
               </div>
-              <div className="grid gap-2">
+              <div className="space-y-2">
                 <Label htmlFor={fields.password.id}>Password</Label>
-                <Input
+                <PasswordInput
                   autoComplete="current-password"
                   {...getInputProps(fields.password, { type: "password" })}
                 />

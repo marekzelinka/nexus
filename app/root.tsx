@@ -1,4 +1,3 @@
-import { HotkeysProvider } from "react-hotkeys-hook";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -34,9 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <HotkeysProvider initiallyActiveScopes={["sidebar"]}>
-          {children}
-        </HotkeysProvider>
+        {children}
         <Toaster />
         <ScrollRestoration />
         <Scripts />

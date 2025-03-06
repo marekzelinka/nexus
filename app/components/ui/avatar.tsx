@@ -41,7 +41,7 @@ export function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "flex aspect-square size-full items-center justify-center bg-muted text-xs font-medium [&_svg]:size-4",
+        "flex size-full items-center justify-center bg-muted [&_svg]:size-4",
         className,
       )}
       {...props}
@@ -52,8 +52,14 @@ export function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
 }
 
 function getAvatarFallbackChildren(props: AvatarFallbackProps) {
-  if (props.children || props.asChild) return props.children;
-  if (props.name) return getNameInitials(props.name);
+  if (props.children || props.asChild) {
+    return props.children;
+  }
+
+  if (props.name) {
+    return getNameInitials(props.name);
+  }
+
   return <UserIcon aria-hidden />;
 }
 

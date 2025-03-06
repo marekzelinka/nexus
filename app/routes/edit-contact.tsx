@@ -10,8 +10,9 @@ import {
 } from "react-router";
 import { z } from "zod";
 import { GenericErrorBoundary } from "~/components/error-boundary";
-import { ErrorList } from "~/components/forms";
+import { ErrorList } from "~/components/error-list";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -129,11 +130,11 @@ export default function EditContact({
   return (
     <Form method="post" {...getFormProps(form)}>
       <div className="grid grid-cols-6 gap-6">
-        <div className="col-span-4 grid gap-2">
+        <div className="col-span-4 space-y-2">
           <Label htmlFor={fields.avatar.id}>Avatar URL</Label>
           <Input type="url" name="avatar" id="avatar" />
         </div>
-        <Tabs defaultValue="profile" className="col-span-full gap-6">
+        <Tabs defaultValue="profile" className="col-span-full">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="social">Social</TabsTrigger>
@@ -143,37 +144,59 @@ export default function EditContact({
             forceMount
             className="data-[state=inactive]:hidden"
           >
-            <div className="grid grid-cols-6 gap-6">
-              <div className="col-span-3 grid gap-2">
-                <Label htmlFor={fields.first.id}>First name</Label>
-                <Input {...getInputProps(fields.first, { type: "text" })} />
-                <ErrorList id={fields.first.id} errors={fields.first.errors} />
-              </div>
-              <div className="col-span-3 grid gap-2">
-                <Label htmlFor={fields.last.id}>Last name</Label>
-                <Input {...getInputProps(fields.last, { type: "text" })} />
-                <ErrorList id={fields.last.id} errors={fields.last.errors} />
-              </div>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-3 space-y-2">
+                    <Label htmlFor={fields.first.id}>First name</Label>
+                    <Input {...getInputProps(fields.first, { type: "text" })} />
+                    <ErrorList
+                      id={fields.first.id}
+                      errors={fields.first.errors}
+                    />
+                  </div>
+                  <div className="col-span-3 space-y-2">
+                    <Label htmlFor={fields.last.id}>Last name</Label>
+                    <Input {...getInputProps(fields.last, { type: "text" })} />
+                    <ErrorList
+                      id={fields.last.id}
+                      errors={fields.last.errors}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           <TabsContent
             value="social"
             forceMount
             className="data-[state=inactive]:hidden"
           >
-            <div className="grid grid-cols-6 gap-6">
-              <div className="col-span-4 grid gap-2">
-                <Label htmlFor={fields.twitter.id}>Twitter</Label>
-                <Input {...getInputProps(fields.twitter, { type: "url" })} />
-                <ErrorList
-                  id={fields.twitter.id}
-                  errors={fields.twitter.errors}
-                />
-              </div>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Social</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-4 space-y-2">
+                    <Label htmlFor={fields.twitter.id}>Twitter</Label>
+                    <Input
+                      {...getInputProps(fields.twitter, { type: "url" })}
+                    />
+                    <ErrorList
+                      id={fields.twitter.id}
+                      errors={fields.twitter.errors}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
-        <div className="col-span-full flex justify-end gap-3 border-t pt-4">
+        <div className="col-span-full flex justify-end gap-3">
           <Button type="button" variant="ghost" size="sm" onClick={goBack}>
             Cancel
           </Button>

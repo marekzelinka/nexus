@@ -12,7 +12,7 @@ import {
   useSearchParams,
 } from "react-router";
 import { z } from "zod";
-import { ErrorList } from "~/components/forms";
+import { ErrorList } from "~/components/error-list";
 import {
   Accordion,
   AccordionContent,
@@ -30,6 +30,7 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { PasswordInput } from "~/components/ui/password-input";
 import { auth } from "~/lib/auth.server";
 import { EmailSchema, NameSchema, PasswordSchema } from "~/lib/user-validation";
 import { safeRedirect } from "~/lib/utils";
@@ -65,13 +66,13 @@ export async function action({ request }: Route.ActionArgs) {
   );
 
   try {
-    const authResponse = await auth.api.signUpEmail({
-      body: { name, email, password },
+    const response = await auth.api.signUpEmail({
       asResponse: true,
+      body: { name, email, password },
     });
 
-    throw redirect(redirectTo, {
-      headers: authResponse.headers,
+    return redirect(redirectTo, {
+      headers: response.headers,
     });
   } catch (error) {
     if (error instanceof APIError) {
@@ -79,7 +80,7 @@ export async function action({ request }: Route.ActionArgs) {
         {
           result: submission.reply({
             hideFields: ["password"],
-            formErrors: [error.body.message as string],
+            formErrors: [error.body.message ?? error.message],
           }),
         },
         { status: 400 },
@@ -105,7 +106,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
   const loading = navigation.location?.pathname === href("/signup");
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="space-y-6">
       <Card>
         <CardHeader className="text-center">
           <CardTitle asChild className="text-xl">
@@ -117,8 +118,8 @@ export default function Signup({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form method="post" {...getFormProps(form)}>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
+            <div className="space-y-6">
+              <div className="space-y-2">
                 <Label htmlFor={fields.name.id}>Name</Label>
                 <Input
                   autoComplete="name"
@@ -126,7 +127,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                 />
                 <ErrorList id={fields.name.id} errors={fields.name.errors} />
               </div>
-              <div className="grid gap-2">
+              <div className="space-y-2">
                 <Label htmlFor={fields.email.id}>Email</Label>
                 <Input
                   autoComplete="email"
@@ -134,9 +135,9 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                 />
                 <ErrorList id={fields.email.id} errors={fields.email.errors} />
               </div>
-              <div className="grid gap-2">
+              <div className="space-y-2">
                 <Label htmlFor={fields.password.id}>Password</Label>
-                <Input
+                <PasswordInput
                   autoComplete="new-password"
                   {...getInputProps(fields.password, { type: "password" })}
                 />
