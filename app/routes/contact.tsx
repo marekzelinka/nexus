@@ -1,6 +1,6 @@
 import type { Contact } from "@prisma/client";
 import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
-import { data, Form, href, useFetcher } from "react-router";
+import { data, Form, href, NavLink, Outlet, useFetcher } from "react-router";
 import { GenericErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -129,6 +129,29 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
             </Form>
           </div>
         </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <nav
+          aria-label="Tabs"
+          className="inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
+        >
+          {[
+            { name: "About", href: "." },
+            { name: "Notes", href: "notes" },
+            { name: "Tasks", href: "tasks" },
+          ].map((tab) => (
+            <NavLink
+              key={tab.name}
+              to={tab.href}
+              prefetch="intent"
+              end={tab.href === "."}
+              className="flex-1 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring aria-[current=page]:bg-background aria-[current=page]:text-foreground aria-[current=page]:shadow-sm"
+            >
+              {tab.name}
+            </NavLink>
+          ))}
+        </nav>
+        <Outlet />
       </div>
     </div>
   );

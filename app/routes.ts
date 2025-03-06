@@ -15,8 +15,10 @@ export default [
   layout("layouts/dashboard.tsx", [
     route("contacts", "routes/contacts.tsx", [
       index("routes/select-contact.tsx"),
-      ...prefix(":contactId", [
-        index("routes/contact.tsx"),
+      route(":contactId", "routes/contact.tsx", [
+        index("routes/contact-profile.tsx"),
+        route("notes", "routes/contact-notes.tsx"),
+        route("tasks", "routes/contact-tasks.tsx"),
         route("edit", "routes/edit-contact.tsx"),
         route("destroy", "routes/destroy-contact.tsx"),
       ]),
