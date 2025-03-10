@@ -41,7 +41,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const query = url.searchParams.get("q");
 
   let contacts = await db.contact.findMany({
-    select: { id: true, first: true, last: true, favorite: true },
     where: { userId: session.user.id },
     orderBy: [{ createdAt: "desc" }, { last: "asc" }],
   });
@@ -58,7 +57,6 @@ export async function action({ request }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.create({
-    select: { id: true },
     data: { user: { connect: { id: session.user.id } } },
   });
 

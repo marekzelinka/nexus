@@ -7,7 +7,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
   await db.contact.delete({
-    select: { id: true },
     where: { id: params.contactId, userId: session.user.id },
   });
 

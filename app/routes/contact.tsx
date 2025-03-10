@@ -24,7 +24,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.findUnique({
-    select: { id: true, first: true, last: true, avatar: true, favorite: true },
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
@@ -40,7 +39,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.findUnique({
-    select: { id: true },
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
@@ -53,7 +51,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const favorite = formData.get("favorite");
 
   const updated = await db.contact.update({
-    select: { id: true },
     data: { favorite: favorite === "true" },
     where: { id: params.contactId, userId: session.user.id },
   });

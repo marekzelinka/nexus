@@ -53,7 +53,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.findUnique({
-    select: { first: true, last: true, avatar: true, twitter: true },
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
@@ -69,7 +68,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.findUnique({
-    select: { id: true },
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
@@ -90,7 +88,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const updates = submission.value;
   await db.contact.update({
-    select: { id: true },
     data: updates,
     where: { id: params.contactId, userId: session.user.id },
   });

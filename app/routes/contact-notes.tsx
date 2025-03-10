@@ -1,15 +1,24 @@
 import { data } from "react-router";
 import { NoteForm } from "~/components/note-form";
+import { NoteList } from "~/components/note-list";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { db } from "~/lib/db.server";
 import { requireAuthSession } from "~/lib/session.server";
 import type { Route } from "./+types/contact-notes";
 
+export async function loader({ params }: Route.LoaderArgs) {
+  const notes = await db.note.findMany({
+    where: { contactId: params.contactId },
+    orderBy: [{ createdAt: "desc" }],
+  });
+
+  return { notes };
+}
+
 export async function action({ request, params }: Route.ActionArgs) {
   const session = await requireAuthSession(request);
 
   const contact = await db.contact.findUnique({
-    select: { id: true },
     where: { id: params.contactId, userId: session.user.id },
   });
   if (!contact) {
@@ -26,7 +35,6 @@ export async function action({ request, params }: Route.ActionArgs) {
       const content = String(formData.get("content"));
 
       await db.note.create({
-        select: { id: true },
         data: { content, contact: { connect: { id: contact.id } } },
       });
 
@@ -78,14 +86,19 @@ export async function action({ request, params }: Route.ActionArgs) {
   return { ok: true };
 }
 
-export default function ContactNotes() {
+export default function ContactNotes({ loaderData }: Route.ComponentProps) {
+  const { notes } = loaderData;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Notes</CardTitle>
       </CardHeader>
       <CardContent>
-        <NoteForm />
+        <div className="space-y-8">
+          <NoteForm />
+          <NoteList notes={notes} />
+        </div>
       </CardContent>
     </Card>
   );
