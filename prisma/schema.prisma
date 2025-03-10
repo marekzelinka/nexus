@@ -11,42 +11,46 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id String @id
+
   name          String
   email         String
   emailVerified Boolean
   image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  contacts      Contact[]
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  sessions Session[]
+  accounts Account[]
+  contacts Contact[]
 
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id String @id
+
   expiresAt DateTime
   token     String
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?
   userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id String @id
+
   accountId             String
   providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -54,34 +58,58 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
 
 model Verification {
-  id         String    @id
+  id String @id
+
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+
+  createdAt DateTime?
+  updatedAt DateTime?
 
   @@map("verification")
 }
 
 model Contact {
-  id        String   @id @default(cuid())
-  first     String?
-  last      String?
-  avatar    String?
-  twitter   String?
-  favorite  Boolean?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+
+  first    String?
+  last     String?
+  avatar   String?
+  twitter  String?
+  favorite Boolean?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes  Note[]
+
   @@map("contact")
+}
+
+model Note {
+  id String @id @default(uuid())
+
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
+
+  @@map("note")
 }
