@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 
-export function NoteForm() {
+export function AddNote() {
   const fetcher = useFetcher();
 
   const pendingAdd =

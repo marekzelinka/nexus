@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { NoteForm } from "~/components/note-form";
+import { AddNote } from "~/components/add-note";
 import { NoteList } from "~/components/note-list";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { db } from "~/lib/db.server";
@@ -97,7 +97,7 @@ export default function ContactNotes({ loaderData }: Route.ComponentProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
-          <NoteForm />
+          <AddNote />
           <NoteList notes={notes} />
         </div>
       </CardContent>
