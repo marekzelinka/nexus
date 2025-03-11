@@ -149,7 +149,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
         )}
       >
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="w-full flex-1">
+          <div className="mx-auto w-full max-w-3xl flex-1">
             <Outlet />
           </div>
         </div>

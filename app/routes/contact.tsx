@@ -1,5 +1,5 @@
 import type { Contact } from "@prisma/client";
-import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
+import { EditIcon, StarIcon, TrashIcon } from "lucide-react";
 import { data, Form, href, NavLink, Outlet, useFetcher } from "react-router";
 import { GenericErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -101,7 +101,7 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
               })}
             >
               <Button type="submit" variant="outline" size="sm">
-                <PencilIcon aria-hidden />
+                <EditIcon aria-hidden />
                 Edit
               </Button>
             </Form>

@@ -48,7 +48,11 @@ export function NoteForm() {
           </div>
         </div>
         <div className="absolute inset-x-0 bottom-0 flex px-3 py-2">
-          <Button variant="ghost" size="icon" className="ml-auto size-7">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto size-7 text-muted-foreground disabled:opacity-100"
+          >
             {isPending ? (
               <LoaderIcon aria-hidden className="animate-spin" />
             ) : (

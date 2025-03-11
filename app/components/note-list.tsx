@@ -1,54 +1,46 @@
 import type { Note } from "@prisma/client";
-import { format, isThisMinute, isToday, isYesterday } from "date-fns";
-import { EllipsisIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+import { useMemo } from "react";
+import { useFetchers } from "react-router";
+import { NoteItem } from "./note-item";
+import { EmptyState } from "./ui/empty-state";
 
 export function NoteList({ notes }: { notes: Note[] }) {
+  const fetchers = useFetchers();
+
+  const pendingDeleteNoteFetchers = fetchers.filter(
+    (fetcher) =>
+      fetcher.state !== "idle" &&
+      fetcher.formData?.get("intent") === "delete-note",
+  );
+  const isDeleting = pendingDeleteNoteFetchers.length > 0;
+  const deletingNoteIds = pendingDeleteNoteFetchers.map((fetcher) =>
+    String(fetcher.formData?.get("noteId")),
+  );
+
+  const visibleNotes = useMemo(() => {
+    let filteredNotes = notes;
+
+    if (isDeleting) {
+      filteredNotes = filteredNotes.filter(
+        (note) => !deletingNoteIds.includes(note.id),
+      );
+    }
+
+    return filteredNotes;
+  }, [notes, isDeleting, deletingNoteIds]);
+  if (visibleNotes.length === 0) {
+    return (
+      <EmptyState
+        title="No notes"
+        description="You haven’t saved any notes yet."
+      />
+    );
+  }
+
   return (
-    <ul role="list" className="space-y-4">
-      {notes.map((note) => (
-        <li key={note.id} className="flex items-start gap-4 text-sm">
-          <div className="flex-1 py-1">{note.content}</div>
-          <div className="flex flex-none items-center gap-2">
-            <p className="text-muted-foreground">
-              {isThisMinute(note.createdAt)
-                ? "now"
-                : isToday(note.createdAt)
-                  ? "today"
-                  : `${
-                      isToday(note.createdAt)
-                        ? "today, "
-                        : isYesterday(note.createdAt)
-                          ? "yesterday, "
-                          : ""
-                    } ${format(note.createdAt, "PP")}`}
-            </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-7"
-                  aria-label="Toggle menu"
-                >
-                  <EllipsisIcon aria-hidden />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem variant="destructive">
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </li>
+    <ul role="list" className="space-y-8 pt-3">
+      {visibleNotes.map((note) => (
+        <NoteItem key={note.id} note={note} />
       ))}
     </ul>
   );

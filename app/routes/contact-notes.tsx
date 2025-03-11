@@ -61,13 +61,13 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     //   break;
     // }
-    // case "delete-task": {
-    //   const id = String(formData.get("id"));
+    case "delete-note": {
+      const noteId = String(formData.get("noteId"));
 
-    //   await deleteTodo(userId, id);
+      await db.note.delete({ where: { id: noteId, contactId: contact.id } });
 
-    //   break;
-    // }
+      break;
+    }
     // case "clear-completed-tasks": {
     //   await clearCompletedTodos(userId);
 
