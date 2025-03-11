@@ -214,17 +214,17 @@ function SearchForm() {
             id="q"
             defaultValue={query ?? undefined}
             placeholder="Type to search..."
-            className="col-start-1 row-start-1 pr-8 pl-8"
+            className="col-start-1 row-start-1 pr-10 pl-8"
           />
-          <div className="pointer-events-none col-start-1 row-start-1 ml-2 self-center opacity-50">
+          <div className="pointer-events-none col-start-1 row-start-1 ml-2 self-center text-sidebar-accent-foreground/50">
             {showSearchSpinner ? (
               <LoaderIcon aria-hidden className="size-4 animate-spin" />
             ) : (
               <SearchIcon aria-hidden className="size-4" />
             )}
           </div>
-          <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
-            <kbd className="flex h-5 items-center rounded border bg-sidebar-accent p-1 px-1.5 font-mono text-[10px] font-medium tracking-widest text-sidebar-accent-foreground">
+          <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sidebar-accent-foreground/50">
+            <kbd className="flex h-5 items-center rounded border bg-sidebar-accent p-1 px-1.5 font-sans text-xs font-medium">
               /
             </kbd>
           </div>

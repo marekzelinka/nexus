@@ -130,7 +130,6 @@ function SidebarMenuButtonNavLink({
       asChild
       tooltip={{
         children: title,
-        hidden: false,
       }}
       isActive={active}
       className="px-2"
