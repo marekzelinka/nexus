@@ -40,17 +40,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
       break;
     }
-    // case "toggle-task-completion": {
-    //   const todoId = String(formData.get("id"));
-    //   const completed = String(formData.get("completed"));
-
-    //   await updateTodo(userId, todoId, {
-    //     completed: completed === "true",
-    //     completedAt: completed === "true" ? new Date() : undefined,
-    //   });
-
-    //   break;
-    // }
     case "edit-note": {
       const noteId = String(formData.get("noteId"));
       const content = String(formData.get("content"));
@@ -69,16 +58,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
       break;
     }
-    // case "clear-completed-tasks": {
-    //   await clearCompletedTodos(userId);
-
-    //   break;
-    // }
-    // case "delete-all-tasks": {
-    //   await deleteAllTodos(userId);
-
-    //   break;
-    // }
     default: {
       throw data(`Invalid/Missing intent: ${intent}`, { status: 400 });
     }
