@@ -8,26 +8,21 @@ export function NoteList({ notes }: { notes: Note[] }) {
   const fetchers = useFetchers();
 
   const pendingDeleteNoteFetchers = fetchers.filter(
-    (fetcher) =>
-      fetcher.state !== "idle" &&
-      fetcher.formData?.get("intent") === "delete-note",
+    (fetcher) => fetcher.formData?.get("intent") === "delete-note",
   );
-  const isDeleting = pendingDeleteNoteFetchers.length > 0;
   const deletingNoteIds = pendingDeleteNoteFetchers.map((fetcher) =>
     String(fetcher.formData?.get("noteId")),
   );
 
   const visibleNotes = useMemo(() => {
-    let filteredNotes = notes;
+    const deletingNotes = deletingNoteIds.length !== 0;
 
-    if (isDeleting) {
-      filteredNotes = filteredNotes.filter(
-        (note) => !deletingNoteIds.includes(note.id),
-      );
-    }
+    let filteredNotes = deletingNotes
+      ? notes.filter((note) => !deletingNoteIds.includes(note.id))
+      : notes;
 
     return filteredNotes;
-  }, [notes, isDeleting, deletingNoteIds]);
+  }, [notes, deletingNoteIds]);
   if (visibleNotes.length === 0) {
     return (
       <EmptyState

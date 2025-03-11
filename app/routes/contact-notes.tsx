@@ -51,16 +51,17 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     //   break;
     // }
-    // case "save-task": {
-    //   const todoId = String(formData.get("id"));
-    //   const description = String(formData.get("description"));
+    case "edit-note": {
+      const noteId = String(formData.get("noteId"));
+      const content = String(formData.get("content"));
 
-    //   await updateTodo(userId, todoId, {
-    //     description,
-    //   });
+      await db.note.update({
+        data: { content },
+        where: { id: noteId, contactId: contact.id },
+      });
 
-    //   break;
-    // }
+      break;
+    }
     case "delete-note": {
       const noteId = String(formData.get("noteId"));
 

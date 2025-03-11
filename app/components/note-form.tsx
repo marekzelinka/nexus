@@ -8,7 +8,7 @@ import { Textarea } from "./ui/textarea";
 export function NoteForm() {
   const fetcher = useFetcher();
 
-  const isPending =
+  const pendingAdd =
     fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "create-note";
 
@@ -17,18 +17,18 @@ export function NoteForm() {
 
   useEffect(() => {
     // Clear and focus the input after the first submit
-    if (fetcher.data && !isPending) {
+    if (fetcher.data && !pendingAdd) {
       formRef.current?.reset();
       textareaRef.current?.focus();
     }
-  }, [isPending]);
+  }, [pendingAdd]);
 
   return (
     <fetcher.Form ref={formRef} method="post">
       <input type="hidden" name="intent" value="create-note" />
       <fieldset
         className="relative disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={isPending}
+        disabled={pendingAdd}
       >
         <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
           <Label htmlFor="content" className="sr-only">
@@ -39,6 +39,15 @@ export function NoteForm() {
             name="content"
             id="content"
             required
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+
+                fetcher.submit(event.currentTarget.form);
+
+                textareaRef.current?.focus();
+              }
+            }}
             placeholder="What would you like to add?"
             className="resize-none border-0 p-3 shadow-none focus-visible:ring-0 disabled:opacity-100"
           />
@@ -53,7 +62,7 @@ export function NoteForm() {
             size="icon"
             className="ml-auto size-7 text-muted-foreground disabled:opacity-100"
           >
-            {isPending ? (
+            {pendingAdd ? (
               <LoaderIcon aria-hidden className="animate-spin" />
             ) : (
               <PlusIcon aria-hidden />
