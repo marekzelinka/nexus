@@ -133,15 +133,31 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
           className="inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
         >
           {[
-            { name: "About", href: "." },
-            { name: "Notes", href: "notes" },
-            { name: "Tasks", href: "tasks" },
+            {
+              name: "About",
+              href: href("/contacts/:contactId", { contactId: contact.id }),
+            },
+            {
+              name: "Notes",
+              href: href("/contacts/:contactId/notes", {
+                contactId: contact.id,
+              }),
+            },
+            {
+              name: "Todos",
+              href: href("/contacts/:contactId/todos", {
+                contactId: contact.id,
+              }),
+            },
           ].map((tab) => (
             <NavLink
               key={tab.name}
               to={tab.href}
               prefetch="intent"
-              end={tab.href === "."}
+              end={
+                tab.href ===
+                href("/contacts/:contactId", { contactId: contact.id })
+              }
               className="flex-1 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring aria-[current=page]:bg-background aria-[current=page]:text-foreground aria-[current=page]:shadow-sm"
             >
               {tab.name}

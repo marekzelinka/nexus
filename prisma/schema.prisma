@@ -96,6 +96,7 @@ model Contact {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   notes  Note[]
+  tasks  Task[]
 
   @@map("contact")
 }
@@ -112,4 +113,20 @@ model Note {
   contact   Contact @relation(fields: [contactId], references: [id])
 
   @@map("note")
+}
+
+model Task {
+  id String @id @default(uuid())
+
+  description String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
+
+  @@map("task")
 }

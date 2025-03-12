@@ -29,7 +29,6 @@ export function PasswordInput({
         <Toggle
           tabIndex={-1}
           type="button"
-          variant="ghost"
           size="icon"
           pressed={showPassword}
           onPressedChange={setShowPassword}

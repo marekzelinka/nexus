@@ -18,7 +18,7 @@ export default [
       route(":contactId", "routes/contact.tsx", [
         index("routes/contact-profile.tsx"),
         route("notes", "routes/contact-notes.tsx"),
-        route("tasks", "routes/contact-tasks.tsx"),
+        route("todos", "routes/contact-todos.tsx"),
       ]),
       ...prefix(":contactId", [
         route("edit", "routes/edit-contact.tsx"),

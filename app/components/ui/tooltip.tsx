@@ -32,7 +32,7 @@ export function TooltipTrigger({
 }
 
 export function TooltipContent({
-  showArrow = false,
+  showArrow = true,
   sideOffset = 0,
   className,
   children,

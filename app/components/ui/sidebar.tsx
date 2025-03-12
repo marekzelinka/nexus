@@ -24,12 +24,7 @@ import {
   SheetTitle,
 } from "./sheet";
 import { Skeleton } from "./skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -124,25 +119,23 @@ export function SidebarProvider({
 
   return (
     <SidebarContext value={contextValue}>
-      <TooltipProvider delayDuration={0}>
-        <div
-          data-slot="sidebar-wrapper"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH,
-              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-              ...style,
-            } as CSSProperties
-          }
-          className={cn(
-            "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
-            className,
-          )}
-          {...props}
-        >
-          {children}
-        </div>
-      </TooltipProvider>
+      <div
+        data-slot="sidebar-wrapper"
+        style={
+          {
+            "--sidebar-width": SIDEBAR_WIDTH,
+            "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+            ...style,
+          } as CSSProperties
+        }
+        className={cn(
+          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
     </SidebarContext>
   );
 }

@@ -8,19 +8,18 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 
 export function NoteItem({ note }: { note: Note }) {
-  const [editing, setEditing] = useState(false);
-
-  const fetcher = useFetcher();
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const editButtonRef = useRef<HTMLButtonElement>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   let content = note.content;
 
-  const savingEdits = fetcher.formData?.get("intent") === "edit-note";
-  if (savingEdits) {
+  const fetcher = useFetcher();
+  const isSavingEdits = fetcher.formData?.get("intent") === "edit-note";
+  if (isSavingEdits) {
     content = String(fetcher.formData?.get("content"));
   }
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <li className="group relative flex gap-4">
@@ -31,7 +30,7 @@ export function NoteItem({ note }: { note: Note }) {
         <div className="size-1.5 rounded-full bg-muted ring-1 ring-muted-foreground" />
       </div>
       <div className="-mt-3 flex-auto py-0.5">
-        {editing ? (
+        {isEditing ? (
           <fetcher.Form method="post">
             <input type="hidden" name="intent" value="edit-note" />
             <input type="hidden" name="noteId" value={note.id} />
@@ -49,8 +48,9 @@ export function NoteItem({ note }: { note: Note }) {
                   onKeyDown={(event) => {
                     if (event.key === "Escape") {
                       flushSync(() => {
-                        setEditing(false);
+                        setIsEditing(false);
                       });
+
                       editButtonRef.current?.focus();
                     }
 
@@ -60,8 +60,9 @@ export function NoteItem({ note }: { note: Note }) {
                       fetcher.submit(event.currentTarget.form);
 
                       flushSync(() => {
-                        setEditing(false);
+                        setIsEditing(false);
                       });
+
                       editButtonRef.current?.focus();
                     }
                   }}
@@ -72,9 +73,8 @@ export function NoteItem({ note }: { note: Note }) {
                     ) {
                       fetcher.submit(event.currentTarget.form);
                     }
-                    flushSync(() => {
-                      setEditing(false);
-                    });
+
+                    setIsEditing(false);
                   }}
                   className="resize-none border-0 p-3 shadow-none focus-visible:ring-0 disabled:opacity-100"
                 />
@@ -115,7 +115,7 @@ export function NoteItem({ note }: { note: Note }) {
                 type="button"
                 onClick={() => {
                   flushSync(() => {
-                    setEditing(true);
+                    setIsEditing(true);
                   });
                   textareaRef.current?.select();
                 }}

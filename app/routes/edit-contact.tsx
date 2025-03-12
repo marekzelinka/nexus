@@ -117,7 +117,7 @@ export default function EditContact({
   });
 
   const navigation = useNavigation();
-  const loading =
+  const isPending =
     navigation.location?.pathname ===
     href("/contacts/:contactId/edit", { contactId: params.contactId });
 
@@ -197,8 +197,8 @@ export default function EditContact({
           <Button type="button" variant="ghost" size="sm" onClick={goBack}>
             Cancel
           </Button>
-          <Button type="submit" size="sm" disabled={loading}>
-            {loading ? "Saving…" : "Save"}
+          <Button type="submit" size="sm" disabled={isPending}>
+            {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
       </div>

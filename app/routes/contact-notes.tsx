@@ -35,7 +35,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       const content = String(formData.get("content"));
 
       await db.note.create({
-        data: { content, contact: { connect: { id: contact.id } } },
+        data: { content, contact: { connect: { id: params.contactId } } },
       });
 
       break;
@@ -46,7 +46,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
       await db.note.update({
         data: { content },
-        where: { id: noteId, contactId: contact.id },
+        where: { id: noteId, contactId: params.contactId },
       });
 
       break;
@@ -54,7 +54,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     case "delete-note": {
       const noteId = String(formData.get("noteId"));
 
-      await db.note.delete({ where: { id: noteId, contactId: contact.id } });
+      await db.note.delete({
+        where: { id: noteId, contactId: params.contactId },
+      });
 
       break;
     }
@@ -75,7 +77,7 @@ export default function ContactNotes({ loaderData }: Route.ComponentProps) {
         <CardTitle>Notes</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
+        <div className="space-y-4">
           <AddNote />
           <NoteList notes={notes} />
         </div>

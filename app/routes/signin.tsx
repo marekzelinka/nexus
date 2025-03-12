@@ -98,7 +98,7 @@ export default function Signin({ actionData }: Route.ComponentProps) {
   });
 
   const navigation = useNavigation();
-  const loading = navigation.location?.pathname === href("/signin");
+  const isPending = navigation.location?.pathname === href("/signin");
 
   return (
     <div className="flex flex-col gap-6">
@@ -146,16 +146,16 @@ export default function Signin({ actionData }: Route.ComponentProps) {
               <ErrorList id={form.id} errors={form.errors} />
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={isPending}
                 className="relative w-full"
               >
-                {loading ? (
+                {isPending ? (
                   <LoaderIcon
                     aria-hidden
                     className="absolute inset-y-0 left-3 animate-spin place-self-center"
                   />
                 ) : null}
-                {loading ? "Signing in…" : "Sign in"}
+                {isPending ? "Signing in…" : "Sign in"}
               </Button>
             </div>
           </Form>

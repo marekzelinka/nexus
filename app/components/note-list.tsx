@@ -6,7 +6,6 @@ import { EmptyState } from "./ui/empty-state";
 
 export function NoteList({ notes }: { notes: Note[] }) {
   const fetchers = useFetchers();
-
   const pendingDeleteNoteFetchers = fetchers.filter(
     (fetcher) => fetcher.formData?.get("intent") === "delete-note",
   );
@@ -15,9 +14,9 @@ export function NoteList({ notes }: { notes: Note[] }) {
   );
 
   const visibleNotes = useMemo(() => {
-    const deletingNotes = deletingNoteIds.length !== 0;
+    const isDeletingNotes = deletingNoteIds.length !== 0;
 
-    let filteredNotes = deletingNotes
+    let filteredNotes = isDeletingNotes
       ? notes.filter((note) => !deletingNoteIds.includes(note.id))
       : notes;
 
