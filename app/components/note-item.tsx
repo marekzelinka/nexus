@@ -1,5 +1,6 @@
 import type { Note } from "@prisma/client";
-import { CheckIcon, EditIcon, TrashIcon } from "lucide-react";
+import { formatDistanceToNowStrict, isEqual, isThisMinute } from "date-fns";
+import { CheckIcon, DotIcon, EditIcon, TrashIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useFetcher } from "react-router";
@@ -26,15 +27,42 @@ export function NoteItem({ note }: { note: Note }) {
       <div className="absolute top-0 -bottom-6 left-0 flex w-6 justify-center group-last:h-0">
         <div className="w-px bg-border" />
       </div>
-      <div className="relative flex size-6 flex-none items-center justify-center bg-white">
+      <div className="flex size-6 flex-none items-center justify-center bg-background">
         <div className="size-1.5 rounded-full bg-muted ring-1 ring-muted-foreground" />
       </div>
-      <div className="-mt-3 flex-auto py-0.5">
+      <div className="flex-auto space-y-1.5 py-1">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <p>
+            Added{" "}
+            <time dateTime={note.createdAt.toISOString()}>
+              {isThisMinute(note.createdAt)
+                ? "now"
+                : formatDistanceToNowStrict(note.createdAt, {
+                    addSuffix: true,
+                  })}
+            </time>
+          </p>
+          {!isEqual(note.createdAt, note.updatedAt) ? (
+            <>
+              <DotIcon aria-hidden className="size-1.5 text-foreground" />
+              <p>
+                Updated{" "}
+                <time dateTime={note.updatedAt.toISOString()}>
+                  {isThisMinute(note.updatedAt)
+                    ? "now"
+                    : formatDistanceToNowStrict(note.updatedAt, {
+                        addSuffix: true,
+                      })}
+                </time>
+              </p>
+            </>
+          ) : null}
+        </div>
         {isEditing ? (
           <fetcher.Form method="post">
             <input type="hidden" name="intent" value="edit-note" />
             <input type="hidden" name="noteId" value={note.id} />
-            <fieldset className="relative disabled:cursor-not-allowed disabled:opacity-50">
+            <fieldset className="relative">
               <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
                 <Label htmlFor="content" className="sr-only">
                   Note
@@ -76,7 +104,7 @@ export function NoteItem({ note }: { note: Note }) {
 
                     setIsEditing(false);
                   }}
-                  className="resize-none border-0 p-3 shadow-none focus-visible:ring-0 disabled:opacity-100"
+                  className="resize-none border-0 p-3 shadow-none focus-visible:ring-0"
                 />
                 {/* Spacer element to match the height of the toolbar */}
                 <div className="py-2" aria-hidden>
@@ -88,7 +116,7 @@ export function NoteItem({ note }: { note: Note }) {
                   type="submit"
                   variant="ghost"
                   size="icon"
-                  className="ml-auto size-7 text-muted-foreground disabled:opacity-100"
+                  className="ml-auto size-7"
                 >
                   <CheckIcon aria-hidden />
                   <span className="sr-only">Save note</span>
@@ -99,7 +127,7 @@ export function NoteItem({ note }: { note: Note }) {
         ) : (
           <div className="relative">
             <div className="relative overflow-hidden rounded-lg border bg-muted/40">
-              <div className="p-3 text-base md:text-sm">{content}</div>
+              <div className="p-3 text-sm">{content}</div>
               {/* Spacer element to match the height of the toolbar */}
               <div className="py-2" aria-hidden>
                 <div className="h-7" />
@@ -107,7 +135,7 @@ export function NoteItem({ note }: { note: Note }) {
             </div>
             <fetcher.Form
               method="post"
-              className="absolute inset-x-0 bottom-0 flex gap-2 px-3 py-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
+              className="absolute inset-x-0 bottom-0 flex justify-end gap-2 px-3 py-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
             >
               <input type="hidden" name="noteId" value={note.id} />
               <Button
@@ -121,7 +149,7 @@ export function NoteItem({ note }: { note: Note }) {
                 }}
                 variant="ghost"
                 size="icon"
-                className="ml-auto size-7 text-muted-foreground"
+                className="size-7"
               >
                 <EditIcon aria-hidden />
                 <span className="sr-only">Edit note</span>
@@ -140,7 +168,7 @@ export function NoteItem({ note }: { note: Note }) {
                 }}
                 variant="ghost"
                 size="icon"
-                className="size-7 text-muted-foreground"
+                className="size-7"
               >
                 <TrashIcon aria-hidden />
                 <span className="sr-only">Delete note</span>

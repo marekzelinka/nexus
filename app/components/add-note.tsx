@@ -26,7 +26,7 @@ export function AddNote() {
     <fetcher.Form ref={formRef} method="post">
       <input type="hidden" name="intent" value="create-note" />
       <fieldset
-        className="relative disabled:pointer-events-none disabled:opacity-25"
+        className="relative disabled:pointer-events-none"
         disabled={isPending}
       >
         <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
@@ -53,12 +53,8 @@ export function AddNote() {
             <div className="h-7" />
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-0 flex px-3 py-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="ml-auto size-7 text-muted-foreground"
-          >
+        <div className="absolute inset-x-0 bottom-0 flex justify-end px-3 py-2">
+          <Button variant="ghost" size="icon" className="size-7">
             {isPending ? (
               <LoaderIcon aria-hidden className="animate-spin" />
             ) : (
