@@ -24,7 +24,7 @@ export default function Landing() {
             to={href("/")}
             className="flex items-center gap-2 self-center font-medium"
           >
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <div className="flex size-6 items-center justify-center rounded-md bg-foreground text-background">
               <HexagonIcon aria-hidden className="size-4" />
             </div>
             Nexus
