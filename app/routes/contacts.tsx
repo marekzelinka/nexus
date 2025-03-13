@@ -124,7 +124,10 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                       )}
                     </span>
                     <Favorite contact={contact}>
-                      <StarIcon aria-hidden className="size-4" />
+                      <StarIcon
+                        aria-hidden
+                        className="size-4 text-sidebar-accent-foreground"
+                      />
                     </Favorite>
                   </NavLink>
                 ))
