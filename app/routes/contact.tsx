@@ -88,6 +88,8 @@ export function ErrorBoundary() {
   return <GenericErrorBoundary />;
 }
 
+export type ContactOutletContext = { contact: Contact };
+
 export default function Contact({ loaderData }: Route.ComponentProps) {
   const { contact } = loaderData;
 
@@ -159,7 +161,7 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
         >
           {[
             {
-              name: "About",
+              name: "Profile",
               href: href("/contacts/:contactId", { contactId: contact.id }),
             },
             {
@@ -186,7 +188,7 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
             </NavLink>
           ))}
         </nav>
-        <Outlet />
+        <Outlet context={{ contact } satisfies ContactOutletContext} />
       </div>
     </div>
   );
