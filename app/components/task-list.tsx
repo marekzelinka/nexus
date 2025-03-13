@@ -7,7 +7,6 @@ import { EmptyState } from "./ui/empty-state";
 
 export function TaskList({ tasks }: { tasks: Task[] }) {
   const fetchers = useFetchers();
-
   const pendingDeleteTaskFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&

@@ -7,39 +7,37 @@ export function TaskViewFilter() {
   const view = (searchParams.get("view") ?? "all") as View;
 
   return (
-    <Form>
-      <nav aria-label="Task filter" className="flex gap-2">
-        <Toggle
-          type="submit"
-          name="view"
-          value="all"
-          aria-label="View all"
-          size="sm"
-          pressed={view === "all"}
-        >
-          All
-        </Toggle>
-        <Toggle
-          type="submit"
-          name="view"
-          value="active"
-          aria-label="View active"
-          size="sm"
-          pressed={view === "active"}
-        >
-          Active
-        </Toggle>
-        <Toggle
-          type="submit"
-          name="view"
-          value="completed"
-          aria-label="View completed"
-          size="sm"
-          pressed={view === "completed"}
-        >
-          Completed
-        </Toggle>
-      </nav>
+    <Form aria-label="Filter by view" className="flex gap-2">
+      <Toggle
+        type="submit"
+        name="view"
+        value="all"
+        size="sm"
+        pressed={view === "all"}
+        aria-label="View all todos"
+      >
+        All
+      </Toggle>
+      <Toggle
+        type="submit"
+        name="view"
+        value="active"
+        size="sm"
+        pressed={view === "active"}
+        aria-label="View active todos"
+      >
+        Active
+      </Toggle>
+      <Toggle
+        type="submit"
+        name="view"
+        value="completed"
+        size="sm"
+        pressed={view === "completed"}
+        aria-label="View completed todos"
+      >
+        Completed
+      </Toggle>
     </Form>
   );
 }

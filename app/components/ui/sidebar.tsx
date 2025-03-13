@@ -254,13 +254,13 @@ export function SidebarTrigger({
         onClick?.(event);
         toggleSidebar();
       }}
+      aria-label="Toggle Sidebar"
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       className={cn("size-7", className)}
       {...props}
     >
       <PanelLeftIcon aria-hidden />
-      <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
 }

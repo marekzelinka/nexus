@@ -6,7 +6,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export function TaskActions({ tasks }: { tasks: Task[] }) {
   const fetchers = useFetchers();
-
   const pendingToggleCompletionFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&
@@ -14,10 +13,9 @@ export function TaskActions({ tasks }: { tasks: Task[] }) {
   );
   const isTogglingCompletion = pendingToggleCompletionFetchers.length > 0;
   const completingTodos = pendingToggleCompletionFetchers.map((fetcher) => ({
-    id: String(fetcher.formData?.get("id")),
+    id: String(fetcher.formData?.get("taskId")),
     completed: fetcher.formData?.get("completed") === "true",
   }));
-
   const pendingDeleteFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&
@@ -25,7 +23,7 @@ export function TaskActions({ tasks }: { tasks: Task[] }) {
   );
   const isDeleting = pendingDeleteFetchers.length > 0;
   const deletingTodoIds = pendingDeleteFetchers.map((fetcher) =>
-    String(fetcher.formData?.get("id")),
+    String(fetcher.formData?.get("taskId")),
   );
 
   tasks = isTogglingCompletion
@@ -47,79 +45,75 @@ export function TaskActions({ tasks }: { tasks: Task[] }) {
 
   const activeTaskCount = tasks.filter((task) => !task.completed).length;
 
-  const fetcher = useFetcher();
+  const clearCompletedFetcher = useFetcher();
+  const isClearingCompleted = clearCompletedFetcher.state !== "idle";
 
-  const isClearingCompleted =
-    fetcher.state !== "idle" &&
-    fetcher.formData?.get("intent") === "clear-completed-tasks";
-
-  const isDeletingAll =
-    fetcher.state !== "idle" &&
-    fetcher.formData?.get("intent") === "delete-all-tasks";
+  const deleteAllFetcher = useFetcher();
+  const isDeletingAll = deleteAllFetcher.state !== "idle";
 
   return (
     <div className="flex items-center justify-between gap-6">
-      <p className="text-sm">
+      <p className="text-sm text-muted-foreground">
         {activeTaskCount} {activeTaskCount === 1 ? "item" : "items"} left
       </p>
-      <fetcher.Form method="post" className="flex gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="submit"
-              name="intent"
-              value="clear-completed-tasks"
-              onClick={(event) => {
-                const response = window.confirm(
-                  "Are you sure you want to clear all completed tasks?",
-                );
-                if (!response) {
-                  event.preventDefault();
+      <div className="flex gap-2">
+        <clearCompletedFetcher.Form method="post">
+          <input type="hidden" name="intent" value="clear-completed-tasks" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="submit"
+                variant="destructive"
+                size="icon"
+                disabled={
+                  !tasks.some((todo) => todo.completed) || isClearingCompleted
                 }
-              }}
-              disabled={
-                !tasks.some((todo) => todo.completed) || isClearingCompleted
-              }
-              variant="destructive"
-              size="icon"
-              className="size-7"
-              // className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-50"
-            >
-              <ListRestartIcon aria-hidden />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isClearingCompleted ? "Clearing…" : "Clear Completed"}</p>
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="submit"
-              name="intent"
-              value="delete-all-tasks"
-              onClick={(event) => {
-                const response = window.confirm(
-                  "Are you sure you want to delete all tasks?",
-                );
-                if (!response) {
-                  event.preventDefault();
-                }
-              }}
-              disabled={!tasks.length || isDeletingAll}
-              variant="destructive"
-              size="icon"
-              className="size-7"
-              // className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-50"
-            >
-              <DeleteIcon aria-hidden />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isDeletingAll ? "Deleting…" : "Delete All"}</p>
-          </TooltipContent>
-        </Tooltip>
-      </fetcher.Form>
+                onClick={(event) => {
+                  const response = window.confirm(
+                    "Are you sure you want to clear all completed tasks?",
+                  );
+                  if (!response) {
+                    event.preventDefault();
+                  }
+                }}
+                className="size-7"
+              >
+                <ListRestartIcon aria-hidden />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{isClearingCompleted ? "Clearing…" : "Clear Completed"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </clearCompletedFetcher.Form>
+        <deleteAllFetcher.Form>
+          <input type="hidden" name="intent" value="delete-all-tasks" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="submit"
+                variant="destructive"
+                size="icon"
+                disabled={!tasks.length || isDeletingAll}
+                onClick={(event) => {
+                  const response = window.confirm(
+                    "Are you sure you want to delete all tasks?",
+                  );
+                  if (!response) {
+                    event.preventDefault();
+                  }
+                }}
+                className="size-7"
+              >
+                <DeleteIcon aria-hidden />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{isDeletingAll ? "Deleting…" : "Delete All"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </deleteAllFetcher.Form>
+      </div>
     </div>
   );
 }

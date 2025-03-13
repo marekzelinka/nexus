@@ -1,8 +1,7 @@
 import type { Task } from "@prisma/client";
-import { format } from "date-fns";
+import { formatDistanceToNowStrict, isThisMinute } from "date-fns";
 import {
-  CalendarCheckIcon,
-  CalendarPlus2Icon,
+  DotIcon,
   EditIcon,
   SaveIcon,
   SquareCheckIcon,
@@ -11,7 +10,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { useFetcher, useFetchers } from "react-router";
+import { Form, useFetcher, useFetchers } from "react-router";
 import { cn } from "~/lib/utils";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -31,66 +30,61 @@ export function TaskItem({ task }: { task: Task }) {
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "delete-all-tasks",
   );
-
   const isActionInProgress =
     isDeletingAll || (task.completed && isClearingCompleted);
 
-  const fetcher = useFetcher();
-  const isTogglingCompletion =
-    fetcher.state !== "idle" &&
-    fetcher.formData?.get("intent") === "toggle-task-completion";
-  const isSavingEdits =
-    fetcher.state !== "idle" && fetcher.formData?.get("intent") === "edit-task";
+  const toogleCompletionFetcher = useFetcher();
+  const isTogglingCompletion = toogleCompletionFetcher.state !== "idle";
+  const optimisticCompleted = isTogglingCompletion
+    ? toogleCompletionFetcher.formData?.get("completed") === "true"
+    : task.completed;
+  const optimisticCompletedAt =
+    isTogglingCompletion || !optimisticCompleted
+      ? new Date()
+      : task.completedAt;
 
-  const optimisticTask = {
-    description: isSavingEdits
-      ? String(fetcher.formData?.get("description"))
-      : task.description,
-    completed: isTogglingCompletion
-      ? fetcher.formData?.get("completed") === "true"
-      : task.completed,
-    completedAt:
-      isTogglingCompletion || !task.completedAt ? new Date() : task.completedAt,
-  };
+  const editFetcher = useFetcher();
+  const isSavingEdits = editFetcher.state !== "idle";
+  const optimisticDescription = isSavingEdits
+    ? String(editFetcher.formData?.get("description"))
+    : task.description;
 
   // Used to focus the edit button when we exit edit mode
   const editButtonRef = useRef<HTMLButtonElement>(null);
+
   // Used to focus the edit form input when we enter edit mode
   const editDescriptionInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="flex items-start gap-2">
-      <fetcher.Form method="post" className="flex-none">
+      <toogleCompletionFetcher.Form method="post" className="flex-none">
         <input type="hidden" name="intent" value="toggle-task-completion" />
         <input type="hidden" name="taskId" value={task.id} />
         <input
           type="hidden"
           name="completed"
-          value={optimisticTask.completed ? "false" : "true"}
+          value={optimisticCompleted ? "false" : "true"}
         />
         <Toggle
           type="submit"
-          disabled={isEditing || isActionInProgress}
-          pressed={optimisticTask.completed}
           size="icon"
+          pressed={optimisticCompleted}
+          disabled={isEditing || isActionInProgress}
+          aria-label={
+            optimisticCompleted ? "Mark as incomplete" : "Mark as complete"
+          }
           className="size-7"
         >
-          {optimisticTask.completed ? (
-            <>
-              <SquareCheckIcon />
-              <span className="sr-only">Mark as incomplete</span>
-            </>
+          {optimisticCompleted ? (
+            <SquareCheckIcon aria-hidden />
           ) : (
-            <>
-              <SquareIcon />
-              <span className="sr-only">Mark as complete</span>
-            </>
+            <SquareIcon aria-hidden />
           )}
         </Toggle>
-      </fetcher.Form>
+      </toogleCompletionFetcher.Form>
       <div className="min-h-12 flex-auto">
         {isEditing ? (
-          <fetcher.Form
+          <editFetcher.Form
             method="post"
             onSubmit={() => {
               flushSync(() => {
@@ -102,16 +96,21 @@ export function TaskItem({ task }: { task: Task }) {
           >
             <input type="hidden" name="intent" value="edit-task" />
             <input type="hidden" name="taskId" value={task.id} />
-            <fieldset className="flex gap-2">
+            <fieldset className="flex gap-2" disabled={isActionInProgress}>
               <Input
                 ref={editDescriptionInputRef}
                 name="description"
                 required
                 onBlur={(event) => {
-                  // Cancel edit mode when we click outside the input
-                  if (!event.currentTarget.contains(event.relatedTarget)) {
-                    setIsEditing(false);
+                  if (
+                    editDescriptionInputRef.current?.value !==
+                      optimisticDescription &&
+                    editDescriptionInputRef.current?.value.trim() !== ""
+                  ) {
+                    editFetcher.submit(event.currentTarget.form);
                   }
+
+                  setIsEditing(false);
                 }}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
@@ -122,46 +121,54 @@ export function TaskItem({ task }: { task: Task }) {
                     editButtonRef.current?.focus();
                   }
                 }}
-                defaultValue={optimisticTask.description}
+                defaultValue={optimisticDescription}
                 aria-label="Edit task"
                 className="h-7"
               />
               <Button
                 type="submit"
-                disabled={isActionInProgress}
                 variant="outline"
                 size="icon"
+                aria-label="Save todo"
                 className="size-7"
               >
                 <SaveIcon aria-hidden />
-                <span className="sr-only">Save todo</span>
               </Button>
             </fieldset>
-          </fetcher.Form>
+          </editFetcher.Form>
         ) : (
           <div
             className={cn(
-              "space-y-1 py-1",
-              optimisticTask.completed || isActionInProgress
-                ? "opacity-50"
-                : "",
+              "space-y-1.5 py-0.5",
+              optimisticCompleted || isActionInProgress ? "opacity-50" : "",
             )}
           >
-            <div className="text-sm">{task.description}</div>
-            <div className="flex gap-3 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <CalendarPlus2Icon aria-hidden className="size-4" />
+            <div className="text-sm/5">{optimisticDescription}</div>
+            <div className="flex items-center gap-2 text-xs/5 text-muted-foreground">
+              <p>
+                Added{" "}
                 <time dateTime={task.createdAt.toISOString()}>
-                  {format(task.createdAt, "PPp")}
+                  {isThisMinute(task.createdAt)
+                    ? "now"
+                    : formatDistanceToNowStrict(task.createdAt, {
+                        addSuffix: true,
+                      })}
                 </time>
-              </div>
-              {optimisticTask.completed ? (
-                <div className="flex items-center gap-1.5">
-                  <CalendarCheckIcon aria-hidden className="size-4" />
-                  <time dateTime={optimisticTask.completedAt.toISOString()}>
-                    {format(optimisticTask.completedAt, "PPp")}
-                  </time>
-                </div>
+              </p>
+              {optimisticCompleted && optimisticCompletedAt ? (
+                <>
+                  <DotIcon aria-hidden className="size-1.5 text-foreground" />
+                  <p>
+                    Completed{" "}
+                    <time dateTime={optimisticCompletedAt.toISOString()}>
+                      {isThisMinute(optimisticCompletedAt)
+                        ? "now"
+                        : formatDistanceToNowStrict(optimisticCompletedAt, {
+                            addSuffix: true,
+                          })}
+                    </time>
+                  </p>
+                </>
               ) : null}
             </div>
           </div>
@@ -172,6 +179,9 @@ export function TaskItem({ task }: { task: Task }) {
           <Button
             ref={editButtonRef}
             type="button"
+            variant="outline"
+            size="icon"
+            disabled={optimisticCompleted || isActionInProgress}
             onClick={() => {
               flushSync(() => {
                 setIsEditing(true);
@@ -179,20 +189,20 @@ export function TaskItem({ task }: { task: Task }) {
 
               editDescriptionInputRef.current?.select();
             }}
-            disabled={optimisticTask.completed || isActionInProgress}
-            variant="outline"
-            size="icon"
+            aria-label="Edit todo"
             className="size-7"
           >
             <EditIcon aria-hidden />
-            <span className="sr-only">Edit</span>
           </Button>
         ) : null}
-        <fetcher.Form method="post">
+        <Form method="post" navigate={false}>
           <input type="hidden" name="intent" value="delete-task" />
           <input type="hidden" name="taskId" value={task.id} />
           <Button
             type="submit"
+            variant="outline"
+            size="icon"
+            disabled={optimisticCompleted || isEditing || isActionInProgress}
             onClick={(event) => {
               const response = window.confirm(
                 "Are you sure you want to delete this task?",
@@ -201,17 +211,12 @@ export function TaskItem({ task }: { task: Task }) {
                 event.preventDefault();
               }
             }}
-            disabled={
-              optimisticTask.completed || isEditing || isActionInProgress
-            }
-            variant="outline"
-            size="icon"
+            aria-label="Delete todo"
             className="size-7"
           >
             <TrashIcon aria-hidden />
-            <span className="sr-only">Delete</span>
           </Button>
-        </fetcher.Form>
+        </Form>
       </div>
     </div>
   );

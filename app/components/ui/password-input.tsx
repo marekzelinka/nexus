@@ -32,10 +32,10 @@ export function PasswordInput({
           size="icon"
           pressed={showPassword}
           onPressedChange={setShowPassword}
+          aria-label="Toggle password visibility"
           className="-mr-1 size-7"
         >
           <IconComp aria-hidden className="size-4" />
-          <span className="sr-only">Toggle password visibility</span>
         </Toggle>
       </div>
     </div>

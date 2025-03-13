@@ -108,18 +108,20 @@ export default function ContactTodos({ loaderData }: Route.ComponentProps) {
         <CardTitle>Todos</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-8">
           <AddTask />
-          <TaskViewFilter />
-          {tasks.length ? (
-            <TaskList tasks={tasks} />
-          ) : (
-            <EmptyState
-              title="No todos available"
-              description="You haven’t added any todos yet."
-            />
-          )}
-          <TaskActions tasks={tasks} />
+          <div className="space-y-4">
+            <TaskViewFilter />
+            {tasks.length ? (
+              <TaskList tasks={tasks} />
+            ) : (
+              <EmptyState
+                title="No todos available"
+                description="You haven’t added any todos yet."
+              />
+            )}
+            <TaskActions tasks={tasks} />
+          </div>
         </div>
       </CardContent>
     </Card>

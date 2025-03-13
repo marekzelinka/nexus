@@ -1,7 +1,12 @@
 import type { Contact } from "@prisma/client";
 import { LoaderIcon, SearchIcon, StarIcon } from "lucide-react";
 import { matchSorter } from "match-sorter";
-import { useEffect, useRef, type PropsWithChildren } from "react";
+import {
+  useEffect,
+  useRef,
+  type PropsWithChildren,
+  type ReactNode,
+} from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   Form,
@@ -17,7 +22,6 @@ import {
 import sortBy from "sort-by";
 import { useSpinDelay } from "spin-delay";
 import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
 import {
   Sidebar,
   SidebarContent,
@@ -66,13 +70,6 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Contacts({ loaderData }: Route.ComponentProps) {
   const { contacts } = loaderData;
 
-  const navigation = useNavigation();
-  const loading = navigation.state === "loading";
-  const searching = new URLSearchParams(navigation.location?.search).has("q");
-  const showLoadingOverlay = useSpinDelay(loading && !searching, {
-    delay: 200,
-  });
-
   return (
     <>
       <Sidebar
@@ -86,7 +83,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
               <SearchForm />
             </search>
             <Form method="post">
-              <Button type="submit" size="sm" aria-label="New contact">
+              <Button type="submit" aria-label="New contact">
                 New
               </Button>
             </Form>
@@ -110,7 +107,7 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                             ? "bg-sidebar-accent"
                             : contact.first || contact.last
                               ? ""
-                              : "text-muted-foreground",
+                              : "text-sidebar-accent-foreground/50",
                         !isActive || !isPending
                           ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                           : "",
@@ -127,13 +124,13 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
                       )}
                     </span>
                     <Favorite contact={contact}>
-                      <StarIcon aria-hidden className="size-4 fill-current" />
+                      <StarIcon aria-hidden className="size-4" />
                     </Favorite>
                   </NavLink>
                 ))
               ) : (
                 <div className="p-4">
-                  <p className="text-sm text-sidebar-foreground/70">
+                  <p className="text-sm text-sidebar-accent-foreground/50">
                     No contacts
                   </p>
                 </div>
@@ -142,19 +139,36 @@ export default function Contacts({ loaderData }: Route.ComponentProps) {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset
-        className={cn(
-          "transition-opacity",
-          showLoadingOverlay ? "opacity-25" : "",
-        )}
-      >
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="mx-auto w-full max-w-3xl flex-1">
-            <Outlet />
+      <SidebarInset>
+        <LoadingOverlay>
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            <div className="mx-auto w-full max-w-3xl flex-1">
+              <Outlet />
+            </div>
           </div>
-        </div>
+        </LoadingOverlay>
       </SidebarInset>
     </>
+  );
+}
+
+function LoadingOverlay({ children }: { children: ReactNode }) {
+  const navigation = useNavigation();
+  const loading = navigation.state === "loading";
+  const searching = new URLSearchParams(navigation.location?.search).has("q");
+  const showLoadingOverlay = useSpinDelay(loading && !searching, {
+    delay: 200,
+  });
+
+  return (
+    <div
+      className={cn(
+        "transition-opacity",
+        showLoadingOverlay ? "opacity-25" : "",
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -202,32 +216,28 @@ function SearchForm() {
         });
       }}
     >
-      <div>
-        <Label htmlFor="q" className="sr-only">
-          Search contacts
-        </Label>
-        <div className="grid grid-cols-1">
-          <SidebarInput
-            ref={inputRef}
-            type="search"
-            name="q"
-            id="q"
-            defaultValue={query ?? undefined}
-            placeholder="Type to search..."
-            className="col-start-1 row-start-1 pr-10 pl-8"
-          />
-          <div className="pointer-events-none col-start-1 row-start-1 ml-2 self-center text-sidebar-accent-foreground/50">
-            {showSearchSpinner ? (
-              <LoaderIcon aria-hidden className="size-4 animate-spin" />
-            ) : (
-              <SearchIcon aria-hidden className="size-4" />
-            )}
-          </div>
-          <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sidebar-accent-foreground/50">
-            <kbd className="flex h-5 items-center rounded border bg-sidebar-accent p-1 px-1.5 font-sans text-xs font-medium">
-              /
-            </kbd>
-          </div>
+      <div className="grid grid-cols-1">
+        <SidebarInput
+          ref={inputRef}
+          type="search"
+          name="q"
+          id="q"
+          defaultValue={query ?? undefined}
+          aria-label="Search contacts"
+          placeholder="Type to search..."
+          className="col-start-1 row-start-1 h-9 pr-10 pl-8"
+        />
+        <div className="pointer-events-none col-start-1 row-start-1 ml-2 self-center text-sidebar-accent-foreground/50">
+          {showSearchSpinner ? (
+            <LoaderIcon aria-hidden className="size-4 animate-spin" />
+          ) : (
+            <SearchIcon aria-hidden className="size-4" />
+          )}
+        </div>
+        <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sidebar-accent-foreground/50">
+          <kbd className="flex h-5 items-center rounded border bg-sidebar-accent p-1 px-1.5 font-sans text-xs font-medium">
+            /
+          </kbd>
         </div>
       </div>
     </Form>

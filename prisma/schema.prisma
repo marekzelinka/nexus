@@ -105,6 +105,7 @@ model Note {
   id String @id @default(uuid())
 
   content String
+  date    DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

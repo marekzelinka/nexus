@@ -6,7 +6,6 @@ import { Input } from "./ui/input";
 
 export function AddTask() {
   const fetcher = useFetcher();
-
   const isPending =
     fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "create-task";
@@ -37,17 +36,17 @@ export function AddTask() {
           placeholder="Add new todo"
           className="h-7"
         />
-        <Button type="submit" variant="outline" size="icon" className="size-7">
+        <Button
+          type="submit"
+          variant="outline"
+          size="icon"
+          aria-label={isPending ? "Adding todo…" : "Add todo"}
+          className="size-7"
+        >
           {isPending ? (
-            <>
-              <LoaderIcon aria-hidden className="animate-spin" />
-              <span className="sr-only">Adding todo…</span>
-            </>
+            <LoaderIcon aria-hidden className="animate-spin" />
           ) : (
-            <>
-              <PlusIcon aria-hidden />
-              <span className="sr-only">Add todo</span>
-            </>
+            <PlusIcon aria-hidden />
           )}
         </Button>
       </fieldset>

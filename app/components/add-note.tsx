@@ -1,12 +1,12 @@
-import { LoaderIcon, PlusIcon } from "lucide-react";
+import { format } from "date-fns";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
 export function AddNote() {
   const fetcher = useFetcher();
-
   const isPending =
     fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "create-note";
@@ -25,11 +25,8 @@ export function AddNote() {
   return (
     <fetcher.Form ref={formRef} method="post">
       <input type="hidden" name="intent" value="create-note" />
-      <fieldset
-        className="relative disabled:pointer-events-none"
-        disabled={isPending}
-      >
-        <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
+      <fieldset className="relative" disabled={isPending}>
+        <div className="rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
           <Textarea
             ref={contentTextareaRef}
             name="content"
@@ -50,17 +47,21 @@ export function AddNote() {
           />
           {/* Spacer element to match the height of the toolbar */}
           <div className="py-2" aria-hidden>
-            <div className="h-7" />
+            <div className="h-9" />
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-0 flex justify-end px-3 py-2">
-          <Button variant="ghost" size="icon" className="size-7">
-            {isPending ? (
-              <LoaderIcon aria-hidden className="animate-spin" />
-            ) : (
-              <PlusIcon aria-hidden />
-            )}
-            <span className="sr-only">Add note</span>
+        <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 px-3 py-2">
+          <Input
+            type="date"
+            name="date"
+            id="date"
+            required
+            defaultValue={format(new Date(), "yyyy-MM-dd")}
+            aria-label="Date"
+            className="w-fit"
+          />
+          <Button type="submit" className="ml-auto">
+            {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
       </fieldset>

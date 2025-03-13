@@ -20,10 +20,7 @@ export default [
         route("notes", "routes/contact-notes.tsx"),
         route("todos", "routes/contact-todos.tsx"),
       ]),
-      ...prefix(":contactId", [
-        route("edit", "routes/edit-contact.tsx"),
-        route("destroy", "routes/destroy-contact.tsx"),
-      ]),
+      ...prefix(":contactId", [route("edit", "routes/edit-contact.tsx")]),
     ]),
   ]),
   ...prefix("api", [route("auth/*", "resources/auth-callback.tsx")]),

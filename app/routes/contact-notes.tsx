@@ -9,7 +9,6 @@ import type { Route } from "./+types/contact-notes";
 export async function loader({ params }: Route.LoaderArgs) {
   const notes = await db.note.findMany({
     where: { contactId: params.contactId },
-    orderBy: [{ createdAt: "desc" }],
   });
 
   return { notes };
@@ -33,9 +32,14 @@ export async function action({ request, params }: Route.ActionArgs) {
   switch (intent) {
     case "create-note": {
       const content = String(formData.get("content"));
+      const date = String(formData.get("date"));
 
       await db.note.create({
-        data: { content, contact: { connect: { id: params.contactId } } },
+        data: {
+          content,
+          date: new Date(date),
+          contact: { connect: { id: params.contactId } },
+        },
       });
 
       break;
@@ -77,7 +81,7 @@ export default function ContactNotes({ loaderData }: Route.ComponentProps) {
         <CardTitle>Notes</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-8">
           <AddNote />
           <NoteList notes={notes} />
         </div>

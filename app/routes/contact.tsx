@@ -1,6 +1,14 @@
 import type { Contact } from "@prisma/client";
 import { EditIcon, StarIcon, TrashIcon } from "lucide-react";
-import { data, Form, href, NavLink, Outlet, useFetcher } from "react-router";
+import {
+  data,
+  Form,
+  href,
+  NavLink,
+  Outlet,
+  redirect,
+  useFetcher,
+} from "react-router";
 import { GenericErrorBoundary } from "~/components/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -48,14 +56,32 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const formData = await request.formData();
-  const favorite = formData.get("favorite");
 
-  const updated = await db.contact.update({
-    data: { favorite: favorite === "true" },
-    where: { id: params.contactId, userId: session.user.id },
-  });
+  const intent = formData.get("intent");
+  switch (intent) {
+    case "favorite-contact": {
+      const favorite = formData.get("favorite");
 
-  return { contact: updated };
+      await db.contact.update({
+        data: { favorite: favorite === "true" },
+        where: { id: params.contactId, userId: session.user.id },
+      });
+
+      break;
+    }
+    case "delete-contact": {
+      await db.contact.delete({
+        where: { id: params.contactId, userId: session.user.id },
+      });
+
+      return redirect(href("/contacts"));
+    }
+    default: {
+      throw data(`Invalid/Missing intent: ${intent}`, { status: 400 });
+    }
+  }
+
+  return { ok: true };
 }
 
 export function ErrorBoundary() {
@@ -68,48 +94,46 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-end gap-5">
-        <div className="flex">
-          <Avatar className="size-24">
-            <AvatarImage src={contact.avatar ?? undefined} alt="" />
-            <AvatarFallback
-              name={
-                contact.first || contact.last
-                  ? `${contact.first ?? ""} ${contact.last ?? ""}`.trim()
-                  : undefined
-              }
-              className="text-3xl [&_svg]:size-14"
-            />
-          </Avatar>
-        </div>
-        <div className="mt-6 flex min-w-0 flex-1 items-center justify-end gap-6 pb-1">
-          <div className="mt-6 flex min-w-0 flex-1 gap-3">
-            <h1 className="truncate text-2xl font-bold">
-              {contact.first || contact.last ? (
-                <>
-                  {contact.first} {contact.last}
-                </>
-              ) : (
-                "No Name"
-              )}
-            </h1>
+        <Avatar className="size-24 flex-none">
+          <AvatarImage src={contact.avatar ?? undefined} alt="" />
+          <AvatarFallback
+            name={
+              contact.first || contact.last
+                ? `${contact.first ?? ""} ${contact.last ?? ""}`.trim()
+                : undefined
+            }
+            className="text-3xl [&_svg]:size-12"
+          />
+        </Avatar>
+        <div className="flex min-w-0 flex-1 items-center gap-6 pb-1">
+          <h1
+            className={cn(
+              "min-w-0 flex-1 truncate text-2xl font-bold",
+              contact.first || contact.last ? "" : "text-muted-foreground/50",
+            )}
+          >
+            {contact.first || contact.last ? (
+              <>
+                {contact.first} {contact.last}
+              </>
+            ) : (
+              "No Name"
+            )}
+          </h1>
+          <div className="flex gap-4">
             <Favorite contact={contact} />
-          </div>
-          <div className="mt-6 flex flex-row justify-stretch gap-4">
             <Form
               action={href("/contacts/:contactId/edit", {
                 contactId: contact.id,
               })}
             >
-              <Button type="submit" variant="outline" size="sm">
+              <Button type="submit" variant="outline">
                 <EditIcon aria-hidden />
                 Edit
               </Button>
             </Form>
             <Form
               method="post"
-              action={href("/contacts/:contactId/destroy", {
-                contactId: contact.id,
-              })}
               onSubmit={(event) => {
                 const response = confirm(
                   "Please confirm you want to delete this record.",
@@ -119,7 +143,8 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
                 }
               }}
             >
-              <Button type="submit" variant="outline" size="sm">
+              <input type="hidden" name="intent" value="delete-contact" />
+              <Button type="submit" variant="outline">
                 <TrashIcon aria-hidden />
                 Delete
               </Button>
@@ -127,10 +152,10 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="space-y-2">
         <nav
           aria-label="Tabs"
-          className="inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
+          className="flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
         >
           {[
             {
@@ -154,10 +179,7 @@ export default function Contact({ loaderData }: Route.ComponentProps) {
               key={tab.name}
               to={tab.href}
               prefetch="intent"
-              end={
-                tab.href ===
-                href("/contacts/:contactId", { contactId: contact.id })
-              }
+              end
               className="flex-1 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring aria-[current=page]:bg-background aria-[current=page]:text-foreground aria-[current=page]:shadow-sm"
             >
               {tab.name}
@@ -178,23 +200,19 @@ function Favorite({ contact }: { contact: Pick<Contact, "id" | "favorite"> }) {
 
   return (
     <fetcher.Form method="post">
+      <input type="hidden" name="intent" value="favorite-contact" />
       <input
         type="hidden"
         name="favorite"
-        value={contact.favorite ? "false" : "true"}
+        value={favorite ? "false" : "true"}
       />
       <Toggle
         type="submit"
-        name="intent"
-        value="favoriteContact"
-        pressed={favorite}
         variant="outline"
-        size="sm"
+        pressed={favorite}
+        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
       >
-        <StarIcon aria-hidden className={cn(favorite ? "fill-current" : "")} />
-        <span className="sr-only">
-          {favorite ? "Remove from favorites" : "Add to favorites"}
-        </span>
+        <StarIcon aria-hidden />
       </Toggle>
     </fetcher.Form>
   );
